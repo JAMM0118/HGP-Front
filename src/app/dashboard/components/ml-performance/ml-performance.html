@@ -1,0 +1,116 @@
+<div class="space-y-6">
+      <!-- Key Metrics -->
+      <div class="grid grid-cols-4 gap-6">
+        <div *ngFor="let metric of metrics" class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+          <div class="flex items-start justify-between mb-3">
+            <div class="p-2 bg-slate-800 rounded-lg">
+              <i [class]="metric.icon + ' w-5 h-5 ' + (metric.status === 'excellent' ? 'text-green-400' : 'text-blue-400')"></i>
+            </div>
+            <div [class]="'text-sm ' + (metric.trend < 0 ? 'text-green-400' : 'text-blue-400')">
+              {{ metric.trend > 0 ? '+' : '' }}{{ metric.trend }}%
+            </div>
+          </div>
+          <div class="text-2xl font-semibold text-white mb-1">{{ metric.value }}</div>
+          <div class="text-sm text-slate-400">{{ metric.name }}</div>
+        </div>
+      </div>
+
+      <!-- Predicted vs Actual -->
+      <div class="grid grid-cols-2 gap-6">
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+          <h3 class="text-lg font-semibold text-white mb-4">Valores Predichos vs Reales</h3>
+          <div class="h-[350px]">
+            <!-- <canvas baseChart
+              [data]="predictedVsActualData"
+              [options]="scatterChartOptions"
+              [type]="'scatter'">
+            </canvas> -->
+          </div>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+          <h3 class="text-lg font-semibold text-white mb-4">Gráfico de Errores Residuales</h3>
+          <div class="h-[350px]">
+            <!-- <canvas baseChart
+              [data]="residualsData"
+              [options]="scatterChartOptions"
+              [type]="'scatter'">
+            </canvas> -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Training Performance -->
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+        <h3 class="text-lg font-semibold text-white mb-4">Rendimiento de Entrenamiento vs Validación</h3>
+        <div class="h-[350px]">
+          <!-- <canvas baseChart
+            [data]="performanceOverTimeData"
+            [options]="lineChartOptions"
+            [type]="'line'">
+          </canvas> -->
+        </div>
+      </div>
+
+      <!-- Feature Importance & Model Drift -->
+      <div class="grid grid-cols-2 gap-6">
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+          <h3 class="text-lg font-semibold text-white mb-4">Clasificación de Importancia de Características</h3>
+          <div class="h-[300px]">
+            <!-- <canvas baseChart
+              [data]="featureImportanceData"
+              [options]="horizontalBarOptions"
+              [type]="'bar'">
+            </canvas> -->
+          </div>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+          <h3 class="text-lg font-semibold text-white mb-4">Indicador de Deriva del Modelo</h3>
+          <div class="h-[300px]">
+            <!-- <canvas baseChart
+              [data]="modelDriftData"
+              [options]="driftLineChartOptions"
+              [type]="'line'">
+            </canvas> -->
+          </div>
+          <div class="mt-4 flex items-center gap-2 text-sm">
+            <i class="check-circle w-4 h-4 text-green-400"></i>
+            <span class="text-slate-300">La deriva del modelo está dentro del umbral aceptable</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Model Status -->
+      <div class="grid grid-cols-3 gap-6">
+        <div class="bg-green-900/20 border border-green-700/50 rounded-xl p-4 flex items-start gap-3">
+          <i class="check-circle w-5 h-5 text-green-400 flex-shrink-0 mt-0.5"></i>
+          <div>
+            <div class="text-sm font-medium text-green-200 mb-1">Salud del Modelo: Excelente</div>
+            <div class="text-xs text-green-300/80">
+              Todas las métricas de rendimiento están dentro de los rangos objetivo. No se requiere reentrenamiento.
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-blue-900/20 border border-blue-700/50 rounded-xl p-4 flex items-start gap-3">
+          <i class="trending-up w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5"></i>
+          <div>
+            <div class="text-sm font-medium text-blue-200 mb-1">Rendimiento Estable</div>
+            <div class="text-xs text-blue-300/80">
+              La precisión de validación ha mejorado un 1.2% durante el último mes.
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-amber-900/20 border border-amber-700/50 rounded-xl p-4 flex items-start gap-3">
+          <i class="alert-triangle w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5"></i>
+          <div>
+            <div class="text-sm font-medium text-amber-200 mb-1">Monitorear Deriva</div>
+            <div class="text-xs text-amber-300/80">
+              Continuar monitoreando los niveles de deriva. Programar revisión en 2 semanas.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>

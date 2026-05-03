@@ -1,12 +1,12 @@
 import { CommonModule } from '@angular/common';
 import {Component } from '@angular/core';
-import { KPI } from '../interfaces/models.interface';
+import { KPI } from '../../interfaces/models.interface';
 
 @Component({
   selector: 'app-executive-summary',
   imports: [CommonModule],
   templateUrl: './executive-summary.html',
-  standalone: true,
+
 })
 export default class ExecutiveSummary {
  kpis: KPI[] = [

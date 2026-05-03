@@ -1,0 +1,122 @@
+ <div class="space-y-6">
+      <!-- Controls -->
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+        <div class="flex items-center gap-4">
+          <div class="flex-1 relative">
+            <i class="search absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400"></i>
+            <input
+              type="text"
+              placeholder="Buscar por dirección, ciudad o barrio..."
+              [(ngModel)]="searchTerm"
+              (ngModelChange)="filterData()"
+              class="w-full pl-10 pr-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div class="flex items-center gap-2">
+            <i class="filter w-5 h-5 text-slate-400"></i>
+            <select
+              [(ngModel)]="filterCity"
+              (ngModelChange)="filterData()"
+              class="px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <option value="all">Todas las Ciudades</option>
+              <option value="Bogotá">Bogotá</option>
+              <option value="Medellín">Medellín</option>
+              <option value="Cali">Cali</option>
+              <option value="Barranquilla">Barranquilla</option>
+            </select>
+            <select
+              [(ngModel)]="filterType"
+              (ngModelChange)="filterData()"
+              class="px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <option value="all">Todos los Tipos</option>
+              <option value="Apartamento">Apartamento</option>
+              <option value="Casa">Casa</option>
+              <option value="Penthouse">Penthouse</option>
+              <option value="Estudio">Estudio</option>
+            </select>
+            <button
+              (click)="handleExport()"
+              class="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
+              <i class="download w-4 h-4"></i>
+              Exportar CSV
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead class="bg-slate-800 border-b border-slate-700">
+              <tr>
+                <th *ngFor="let header of headers"
+                    (click)="handleSort(header.field)"
+                    class="px-4 py-3 text-left text-xs font-medium text-slate-300 uppercase tracking-wider cursor-pointer hover:bg-slate-700/50 transition-colors">
+                  <div class="flex items-center gap-2">
+                    {{ header.label }}
+                    <i *ngIf="sortField === header.field"
+                       [class]="(sortDirection === 'asc' ? 'chevron-up' : 'chevron-down') + ' w-4 h-4'"></i>
+                  </div>
+                </th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-800">
+              <tr *ngFor="let property of paginatedData"
+                  class="hover:bg-slate-800/50 transition-colors">
+                <td class="px-4 py-3 text-sm font-medium text-blue-400">{{ property.id }}</td>
+                <td class="px-4 py-3 text-sm text-slate-300">{{ property.address }}</td>
+                <td class="px-4 py-3 text-sm text-slate-300">{{ property.city }}</td>
+                <td class="px-4 py-3 text-sm text-slate-400">{{ property.neighborhood }}</td>
+                <td class="px-4 py-3 text-sm">
+                  <span class="px-2 py-1 bg-slate-700 text-slate-300 rounded text-xs">{{ property.type }}</span>
+                </td>
+                <td class="px-4 py-3 text-sm text-slate-300">{{ property.area }}</td>
+                <td class="px-4 py-3 text-sm text-slate-300">{{ property.bedrooms }}</td>
+                <td class="px-4 py-3 text-sm text-slate-300">{{ property.bathrooms }}</td>
+                <td class="px-4 py-3 text-sm font-semibold text-white">\${{ property.price }}M</td>
+                <td class="px-4 py-3 text-sm">
+                  <div class="flex flex-col">
+                    <span class="text-slate-300">\${{ property.predictedPrice }}M</span>
+                    <span [class]="'text-xs ' + getPriceDiffClass(property)">
+                      {{ getPriceDiffPercentage(property) }}
+                    </span>
+                  </div>
+                </td>
+                <td class="px-4 py-3 text-sm text-slate-400">{{ property.yearBuilt }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Pagination -->
+      <div class="flex items-center justify-between bg-slate-900 border border-slate-800 rounded-xl px-6 py-4">
+        <div class="text-sm text-slate-400">
+          Mostrando {{ getStartIndex() }} a {{ getEndIndex() }} de {{ filteredData.length }} propiedades
+        </div>
+        <div class="flex items-center gap-2">
+          <button
+            (click)="previousPage()"
+            [disabled]="currentPage === 1"
+            class="p-2 bg-slate-800 hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed text-slate-300 rounded-lg transition-colors">
+            <i class="chevron-left w-5 h-5"></i>
+          </button>
+          <div class="flex items-center gap-1">
+            <button
+              *ngFor="let page of getVisiblePages()"
+              (click)="currentPage = page"
+              [class]="'px-3 py-1 rounded-lg text-sm transition-colors ' +
+                (currentPage === page ? 'bg-blue-600 text-white' : 'bg-slate-800 text-slate-300 hover:bg-slate-700')">
+              {{ page }}
+            </button>
+          </div>
+          <button
+            (click)="nextPage()"
+            [disabled]="currentPage === getTotalPages()"
+            class="p-2 bg-slate-800 hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed text-slate-300 rounded-lg transition-colors">
+            <i class="chevron-right w-5 h-5"></i>
+          </button>
+        </div>
+      </div>
+    </div>

@@ -1,0 +1,154 @@
+ <div class="grid grid-cols-3 gap-6">
+      <!-- Input Form -->
+      <div class="space-y-6">
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+          <h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+            <i class="calculator w-5 h-5"></i>
+            Detalles de la Propiedad
+          </h3>
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-slate-300 mb-2">Área (m²)</label>
+              <input type="number" [(ngModel)]="formData.area"
+                class="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-slate-300 mb-2">Habitaciones</label>
+              <input type="number" [(ngModel)]="formData.bedrooms"
+                class="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-slate-300 mb-2">Baños</label>
+              <input type="number" [(ngModel)]="formData.bathrooms"
+                class="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-slate-300 mb-2">Tipo de Propiedad</label>
+              <select [(ngModel)]="formData.propertyType"
+                class="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="apartment">Apartamento</option>
+                <option value="house">Casa</option>
+                <option value="penthouse">Penthouse</option>
+                <option value="studio">Estudio</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-slate-300 mb-2">Ciudad</label>
+              <select [(ngModel)]="formData.city"
+                class="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="bogota">Bogotá</option>
+                <option value="medellin">Medellín</option>
+                <option value="cali">Cali</option>
+                <option value="barranquilla">Barranquilla</option>
+                <option value="cartagena">Cartagena</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-slate-300 mb-2">Barrio</label>
+              <select [(ngModel)]="formData.neighborhood"
+                class="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="chapinero">Chapinero</option>
+                <option value="usaquen">Usaquén</option>
+                <option value="el-poblado">El Poblado</option>
+                <option value="laureles">Laureles</option>
+                <option value="granada">Granada</option>
+              </select>
+            </div>
+
+            <button (click)="handlePredict()"
+              class="w-full py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium rounded-lg transition-all">
+              Generar Predicción
+            </button>
+          </div>
+        </div>
+
+        <!-- Prediction Result Card -->
+        <div *ngIf="prediction" class="bg-gradient-to-br from-blue-900/50 to-purple-900/50 border border-blue-700/50 rounded-xl p-6">
+          <h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+            <i class="trending-up w-5 h-5 text-blue-400"></i>
+            Precio Predicho
+          </h3>
+          <div class="text-4xl font-bold text-white mb-2">\${{ prediction.price }}M COP</div>
+          <div class="text-sm text-slate-300 mb-4">
+            Intervalo de Confianza: \${{ prediction.lowerBound }}M - \${{ prediction.upperBound }}M
+          </div>
+          <div class="flex items-center gap-2 text-sm text-slate-300">
+            <div class="px-3 py-1 bg-green-500/20 text-green-400 rounded-full">
+              {{ prediction.confidence }}% Confianza
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Feature Importance & SHAP Values -->
+      <div class="col-span-2 space-y-6">
+        <!-- <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+          <h3 class="text-lg font-semibold text-white mb-4">Importancia de Características</h3>
+          <div class="h-[300px]">
+            <canvas baseChart
+              [data]="featureImportanceData"
+              [options]="horizontalBarOptions"
+              [type]="'bar'">
+            </canvas>
+          </div>
+        </div> -->
+
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+          <h3 class="text-lg font-semibold text-white mb-4">Análisis de Valores SHAP</h3>
+          <div class="space-y-3">
+            <div *ngFor="let item of shapValues" class="space-y-1">
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-slate-300">{{ item.feature }}</span>
+                <span [class]="'font-semibold ' + (item.direction === 'positive' ? 'text-green-400' : 'text-red-400')">
+                  {{ item.direction === 'positive' ? '+' : '' }}{{ item.impact }}M
+                </span>
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="flex-1 h-2 bg-slate-800 rounded-full overflow-hidden">
+                  <div
+                    [class]="'h-full ' + (item.direction === 'positive' ? 'bg-gradient-to-r from-green-600 to-green-400' : 'bg-gradient-to-r from-red-600 to-red-400')"
+                    [style.width.%]="(Math.abs(item.impact) / 200) * 100"
+                  ></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+          <h3 class="text-lg font-semibold text-white mb-4">Visualización del Intervalo de Confianza</h3>
+          <div class="relative h-24 bg-slate-800 rounded-lg p-4">
+            <div *ngIf="prediction">
+              <div class="absolute inset-x-0 top-1/2 h-3 bg-blue-500/20 rounded-full"></div>
+              <div class="absolute left-0 top-1/2 -translate-y-1/2 px-3 py-1 bg-slate-700 rounded text-xs text-slate-300">
+                \${{ prediction.lowerBound }}M
+              </div>
+              <div class="absolute right-0 top-1/2 -translate-y-1/2 px-3 py-1 bg-slate-700 rounded text-xs text-slate-300">
+                \${{ prediction.upperBound }}M
+              </div>
+              <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-blue-500 rounded-full border-2 border-white"></div>
+              <div class="absolute top-0 left-1/2 -translate-x-1/2 px-3 py-1 bg-blue-600 rounded text-sm font-semibold text-white">
+                \${{ prediction.price }}M
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-amber-900/20 border border-amber-700/50 rounded-xl p-4 flex items-start gap-3">
+          <i class="alert-circle w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5"></i>
+          <div>
+            <div class="text-sm font-medium text-amber-200 mb-1">Insights del Modelo</div>
+            <div class="text-xs text-amber-300/80">
+              Esta predicción se basa en datos históricos de 284,567 propiedades. La ubicación y el área son los
+              predictores más fuertes. Considere la volatilidad del mercado y las tendencias recientes al tomar
+              decisiones de inversión.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>

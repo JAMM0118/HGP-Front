@@ -1,0 +1,85 @@
+<div class="space-y-6">
+      <!-- Price Distribution -->
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+        <h3 class="text-lg font-semibold text-white mb-4">Distribución de Precios</h3>
+        <div class="h-[300px]">
+          <!-- <canvas baseChart
+            [data]="priceDistributionData"
+            [options]="barChartOptions"
+            [type]="'bar'">
+          </canvas> -->
+        </div>
+      </div>
+
+      <!-- Time Series Trends -->
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+        <h3 class="text-lg font-semibold text-white mb-4">Tendencias del Mercado (2022-2025)</h3>
+        <div class="h-[350px]">
+          <!-- <canvas baseChart
+            [data]="timeSeriesData"
+            [options]="lineChartOptions"
+            [type]="'line'">
+          </canvas> -->
+        </div>
+      </div>
+
+      <!-- Scatter Plots -->
+      <div class="grid grid-cols-2 gap-6">
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+          <h3 class="text-lg font-semibold text-white mb-4">Precio vs Área</h3>
+          <div class="h-[300px]">
+            <!-- <canvas baseChart
+              [data]="priceVsAreaData"
+              [options]="scatterChartOptions"
+              [type]="'scatter'">
+            </canvas> -->
+          </div>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+          <h3 class="text-lg font-semibold text-white mb-4">Precio vs Habitaciones</h3>
+          <div class="h-[300px]">
+            <!-- <canvas baseChart
+              [data]="priceVsBedroomsData"
+              [options]="barChartOptions"
+              [type]="'bar'">
+            </canvas> -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Property Types and Correlation Matrix -->
+      <div class="grid grid-cols-2 gap-6">
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+          <h3 class="text-lg font-semibold text-white mb-4">Distribución por Tipo de Propiedad</h3>
+          <div class="h-[300px]">
+            <!-- <canvas baseChart
+              [data]="propertyTypesData"
+              [options]="horizontalBarOptions"
+              [type]="'bar'">
+            </canvas> -->
+          </div>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+          <h3 class="text-lg font-semibold text-white mb-4">Matriz de Correlación</h3>
+          <div class="space-y-2">
+            <div class="grid grid-cols-5 gap-2 text-xs font-medium text-slate-400 text-center">
+              <div></div>
+              <div>Precio</div>
+              <div>Habs</div>
+              <div>Baños</div>
+              <div>Ubicación</div>
+            </div>
+            <div *ngFor="let row of correlationData" class="grid grid-cols-5 gap-2">
+              <div class="text-xs font-medium text-slate-400 flex items-center">{{ row.feature }}</div>
+              <div *ngFor="let value of [row.price, row.bedrooms, row.bathrooms, row.location]"
+                   [class]="getCorrelationClass(value)"
+                   [style.opacity]="Math.abs(value)">
+                {{ value.toFixed(2) }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
