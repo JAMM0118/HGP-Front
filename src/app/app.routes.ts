@@ -3,7 +3,7 @@ import { Routes } from '@angular/router';
 export const routes: Routes = [
   {
     path: '**',
-    loadComponent: () => import('./dashboard/home/home')
+    loadComponent: () => import('./dashboard/pages/home/home-component')
   },
   {
     path: 'summary',

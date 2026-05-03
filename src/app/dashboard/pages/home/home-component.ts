@@ -1,15 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { NavigationItem } from '../interfaces/models.interface';
-import ExecutiveSummary from "../components/executive-summary/executive-summary";
-import { RouterLink } from "@angular/router";
-import PredictiveModelling from '../components/predictive-modelling/predictive-modelling';
-import ExploratoryAnalytics from "../components/exploratory-analytics/exploratory-analytics";
-import GeospatialIntelligence from "../components/geospatial-intelligence/geospatial-intelligence";
-import MlPerformance from "../components/ml-performance/ml-performance";
-import AiInsights from "../components/ai-insights/ai-insights";
-import DataTable from "../components/data-table/data-table";
-
+import {Component } from '@angular/core';
+import { NavigationItem } from '../../interfaces/models.interface';
+import ExecutiveSummary from "../../components/executive-summary/executive-summary";
+import PredictiveModelling from '../../components/predictive-modelling/predictive-modelling';
+import ExploratoryAnalytics from "../../components/exploratory-analytics/exploratory-analytics";
+import GeospatialIntelligence from "../../components/geospatial-intelligence/geospatial-intelligence";
+import MlPerformance from "../../components/ml-performance/ml-performance";
+import AiInsights from "../../components/ai-insights/ai-insights";
+import DataTable from "../../components/data-table/data-table";
 
 @Component({
   selector: 'app-home',
@@ -23,10 +21,9 @@ import DataTable from "../components/data-table/data-table";
     AiInsights,
     DataTable
   ],
-  templateUrl: './home.html',
-  styleUrl: './home.css',
+  templateUrl: './home-component.html',
 })
-export default class Home {
+export default class HomeComponent {
     activeModule = 'executive';
 
   navigationItems: NavigationItem[] = [
