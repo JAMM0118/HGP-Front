@@ -1,13 +1,15 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import {Component } from '@angular/core';
 import { ChartConfiguration } from 'chart.js';
+import { NgChartsModule } from 'ng2-charts';
+
 
 @Component({
   selector: 'app-ml-performance',
-  imports: [CommonModule],
-  templateUrl: './ml-performance.html', 
+  imports: [CommonModule, NgChartsModule],
+  templateUrl: './ml-performance.html',
 })
-export default class MlPerformance { 
+export default class MlPerformance {
   metrics = [
     { name: 'RMSE', value: '23.4M COP', trend: -2.3, status: 'good', icon: 'activity' },
     { name: 'MAE', value: '18.7M COP', trend: -1.8, status: 'good', icon: 'activity' },

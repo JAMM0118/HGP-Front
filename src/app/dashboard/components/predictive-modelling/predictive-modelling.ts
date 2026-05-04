@@ -1,14 +1,14 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import {Component } from '@angular/core';
 import { PredictionResult } from '../../interfaces/models.interface';
 import { CommonModule } from '@angular/common';
 import { ChartConfiguration } from 'chart.js';
 import {FormsModule} from "@angular/forms";
+import { NgChartsModule } from 'ng2-charts';
 
 @Component({
   selector: 'app-predictive-modelling',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule,NgChartsModule],
   templateUrl: './predictive-modelling.html',
-  styleUrl: './predictive-modelling.css',
 })
 export default class PredictiveModelling {
   Math = Math;

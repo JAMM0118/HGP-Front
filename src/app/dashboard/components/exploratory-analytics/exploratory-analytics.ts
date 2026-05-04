@@ -1,10 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { Component } from '@angular/core';
 import { ChartConfiguration, ChartData } from 'chart.js';
+import { NgChartsModule } from 'ng2-charts';
+
 
 @Component({
   selector: 'app-exploratory-analytics',
-  imports: [CommonModule],
+  imports: [CommonModule, NgChartsModule],
   templateUrl: './exploratory-analytics.html',
 })
 export default class ExploratoryAnalytics {
