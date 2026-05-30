@@ -1,15 +1,16 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Property } from '../../interfaces/models.interface';
+import { PaginationParams, Property, PropertyFilters } from '../../interfaces/models.interface';
+import { PropertyService } from '../../../services/property.service';
 
 @Component({
   selector: 'app-data-table',
   imports: [CommonModule, FormsModule],
   templateUrl: './data-table.html',
 })
-export default class DataTable {
-   searchTerm = '';
+export default class DataTable implements OnInit  {
+  searchTerm = '';
   filterCity = 'all';
   filterType = 'all';
   sortField: keyof Property = 'price';
@@ -17,84 +18,75 @@ export default class DataTable {
   currentPage = 1;
   itemsPerPage = 15;
 
-  properties: Property[] = [
-    { id: 'P001', address: 'Cra 7 #85-42', city: 'Bogotá', neighborhood: 'Chapinero', type: 'Apartamento', area: 95, bedrooms: 3, bathrooms: 2, price: 628, predictedPrice: 645, yearBuilt: 2018, lastUpdated: '2025-04-20' },
-    { id: 'P002', address: 'Calle 10 #43A-28', city: 'Medellín', neighborhood: 'El Poblado', type: 'Penthouse', area: 168, bedrooms: 4, bathrooms: 3, price: 892, predictedPrice: 875, yearBuilt: 2020, lastUpdated: '2025-04-22' },
-    { id: 'P003', address: 'Av Circunvalar #5-89', city: 'Cali', neighborhood: 'Granada', type: 'Casa', area: 205, bedrooms: 5, bathrooms: 4, price: 734, predictedPrice: 728, yearBuilt: 2015, lastUpdated: '2025-04-19' },
-    { id: 'P004', address: 'Cra 15 #118-32', city: 'Bogotá', neighborhood: 'Usaquén', type: 'Apartamento', area: 82, bedrooms: 2, bathrooms: 2, price: 512, predictedPrice: 505, yearBuilt: 2019, lastUpdated: '2025-04-21' },
-    { id: 'P005', address: 'Calle 70 #52-44', city: 'Barranquilla', neighborhood: 'El Prado', type: 'Apartamento', area: 108, bedrooms: 3, bathrooms: 2, price: 445, predictedPrice: 461, yearBuilt: 2017, lastUpdated: '2025-04-18' },
-    { id: 'P006', address: 'Transversal 39A #75-105', city: 'Medellín', neighborhood: 'Laureles', type: 'Apartamento', area: 75, bedrooms: 2, bathrooms: 2, price: 468, predictedPrice: 472, yearBuilt: 2021, lastUpdated: '2025-04-23' },
-    { id: 'P007', address: 'Calle 5 Norte #23N-45', city: 'Cali', neighborhood: 'San Fernando', type: 'Casa', area: 185, bedrooms: 4, bathrooms: 3, price: 612, predictedPrice: 598, yearBuilt: 2016, lastUpdated: '2025-04-20' },
-    { id: 'P008', address: 'Cra 9 #72-35', city: 'Bogotá', neighborhood: 'Chapinero', type: 'Estudio', area: 45, bedrooms: 1, bathrooms: 1, price: 298, predictedPrice: 285, yearBuilt: 2022, lastUpdated: '2025-04-24' },
-    { id: 'P009', address: 'Calle 10A #34-11', city: 'Medellín', neighborhood: 'El Poblado', type: 'Apartamento', area: 120, bedrooms: 3, bathrooms: 2, price: 592, predictedPrice: 582, yearBuilt: 2019, lastUpdated: '2025-04-22' },
-    { id: 'P010', address: 'Av 3N #12-08', city: 'Cali', neighborhood: 'Granada', type: 'Apartamento', area: 95, bedrooms: 3, bathrooms: 2, price: 478, predictedPrice: 485, yearBuilt: 2018, lastUpdated: '2025-04-21' },
-    { id: 'P011', address: 'Cra 84 #45-67', city: 'Barranquilla', neighborhood: 'Alto Prado', type: 'Casa', area: 230, bedrooms: 5, bathrooms: 4, price: 789, predictedPrice: 802, yearBuilt: 2014, lastUpdated: '2025-04-19' },
-    { id: 'P012', address: 'Calle 93 #11A-28', city: 'Bogotá', neighborhood: 'Chicó', type: 'Penthouse', area: 255, bedrooms: 4, bathrooms: 4, price: 1245, predictedPrice: 1198, yearBuilt: 2021, lastUpdated: '2025-04-23' },
-    { id: 'P013', address: 'Calle 77 Sur #48-90', city: 'Medellín', neighborhood: 'Sabaneta', type: 'Apartamento', area: 68, bedrooms: 2, bathrooms: 1, price: 312, predictedPrice: 325, yearBuilt: 2020, lastUpdated: '2025-04-20' },
-    { id: 'P014', address: 'Av 6 #36N-25', city: 'Cali', neighborhood: 'Versalles', type: 'Apartamento', area: 88, bedrooms: 2, bathrooms: 2, price: 398, predictedPrice: 402, yearBuilt: 2017, lastUpdated: '2025-04-22' },
-    { id: 'P015', address: 'Cra 53 #82-15', city: 'Barranquilla', neighborhood: 'El Prado', type: 'Estudio', area: 52, bedrooms: 1, bathrooms: 1, price: 245, predictedPrice: 238, yearBuilt: 2023, lastUpdated: '2025-04-24' }
-  ];
+  isLoading = false;
+  loadingMessage = '';
+  successMessage = '';
+  errorMessage = '';
+  importErrors: string[] = [];
+
+  totalRecords = 0;
 
   headers = [
     { field: 'id' as keyof Property, label: 'ID' },
-    { field: 'address' as keyof Property, label: 'Dirección' },
-    { field: 'city' as keyof Property, label: 'Ciudad' },
-    { field: 'neighborhood' as keyof Property, label: 'Barrio' },
-    { field: 'type' as keyof Property, label: 'Tipo' },
-    { field: 'area' as keyof Property, label: 'Área (m²)' },
-    { field: 'bedrooms' as keyof Property, label: 'Habs' },
-    { field: 'bathrooms' as keyof Property, label: 'Baños' },
-    { field: 'price' as keyof Property, label: 'Precio (M)' },
+    { field: 'titulo' as keyof Property, label: 'Título' },
+    { field: 'direccion' as keyof Property, label: 'Dirección' },
+    { field: 'ciudad' as keyof Property, label: 'Ciudad' },
+    { field: 'barrios' as keyof Property, label: 'Barrio' },
+    { field: 'tipoPropiedad' as keyof Property, label: 'Tipo' },
+    { field: 'tipoOperacion' as keyof Property, label: 'Operación' },
+    { field: 'areaConstruida' as keyof Property, label: 'Área (m²)' },
+    { field: 'habitaciones' as keyof Property, label: 'Habs' },
+    { field: 'banos' as keyof Property, label: 'Baños' },
+    { field: 'estrato' as keyof Property, label: 'Estrato' },
+    { field: 'precio' as keyof Property, label: 'Precio' },
     { field: 'predictedPrice' as keyof Property, label: 'Predicho' },
-    { field: 'yearBuilt' as keyof Property, label: 'Año' }
+    { field: 'antiguedad' as keyof Property, label: 'Antigüedad' }
   ];
 
   filteredData: Property[] = [];
   paginatedData: Property[] = [];
 
+  constructor(private propertyService: PropertyService) {}
+
   ngOnInit() {
-    this.filterData();
+    this.loadData();
+  }
+
+  loadData() {
+    this.isLoading = true;
+    this.loadingMessage = 'Cargando propiedades...';
+
+    const filters: PropertyFilters = {};
+    if (this.searchTerm) filters.search = this.searchTerm;
+    if (this.filterCity !== 'all') filters.city = this.filterCity;
+    if (this.filterType !== 'all') filters.type = this.filterType;
+
+    const pagination: PaginationParams = {
+      page: this.currentPage,
+      limit: this.itemsPerPage,
+      sortBy: this.sortField.toString(),
+      sortOrder: this.sortDirection
+    };
+
+    this.propertyService.getProperties(filters, pagination).subscribe({
+      next: (response) => {
+        this.paginatedData = response.data;
+        this.filteredData = response.data;
+        this.totalRecords = response.total;
+        this.isLoading = false;
+        this.loadingMessage = '';
+      },
+      error: (error) => {
+        this.errorMessage = 'Error al cargar las propiedades';
+        this.isLoading = false;
+        this.loadingMessage = '';
+      }
+    });
   }
 
   filterData() {
-    let filtered = this.properties;
-
-    if (this.searchTerm) {
-      const term = this.searchTerm.toLowerCase();
-      filtered = filtered.filter(
-        p =>
-          p.address.toLowerCase().includes(term) ||
-          p.city.toLowerCase().includes(term) ||
-          p.neighborhood.toLowerCase().includes(term)
-      );
-    }
-
-    if (this.filterCity !== 'all') {
-      filtered = filtered.filter(p => p.city === this.filterCity);
-    }
-
-    if (this.filterType !== 'all') {
-      filtered = filtered.filter(p => p.type === this.filterType);
-    }
-
-    filtered.sort((a, b) => {
-      const aValue = a[this.sortField];
-      const bValue = b[this.sortField];
-
-      if (typeof aValue === 'string' && typeof bValue === 'string') {
-        return this.sortDirection === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
-      }
-
-      if (typeof aValue === 'number' && typeof bValue === 'number') {
-        return this.sortDirection === 'asc' ? aValue - bValue : bValue - aValue;
-      }
-
-      return 0;
-    });
-
-    this.filteredData = filtered;
     this.currentPage = 1;
-    this.updatePaginatedData();
+    this.loadData();
   }
 
   handleSort(field: keyof Property) {
@@ -104,38 +96,33 @@ export default class DataTable {
       this.sortField = field;
       this.sortDirection = 'desc';
     }
-    this.filterData();
-  }
-
-  updatePaginatedData() {
-    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-    this.paginatedData = this.filteredData.slice(startIndex, startIndex + this.itemsPerPage);
+    this.loadData();
   }
 
   previousPage() {
     if (this.currentPage > 1) {
       this.currentPage--;
-      this.updatePaginatedData();
+      this.loadData();
     }
   }
 
   nextPage() {
     if (this.currentPage < this.getTotalPages()) {
       this.currentPage++;
-      this.updatePaginatedData();
+      this.loadData();
     }
   }
 
   getTotalPages(): number {
-    return Math.ceil(this.filteredData.length / this.itemsPerPage);
+    return Math.ceil(this.totalRecords / this.itemsPerPage);
   }
 
   getStartIndex(): number {
-    return (this.currentPage - 1) * this.itemsPerPage + 1;
+    return this.totalRecords === 0 ? 0 : (this.currentPage - 1) * this.itemsPerPage + 1;
   }
 
   getEndIndex(): number {
-    return Math.min(this.currentPage * this.itemsPerPage, this.filteredData.length);
+    return Math.min(this.currentPage * this.itemsPerPage, this.totalRecords);
   }
 
   getVisiblePages(): number[] {
@@ -164,43 +151,108 @@ export default class DataTable {
     return pages;
   }
 
+  formatPrice(price?: number): string {
+    if (!price) return 'N/A';
+    if (price >= 1000000) {
+      return `$${(price / 1000000).toFixed(1)}M`;
+    }
+    return `$${price.toLocaleString('es-CO')}`;
+  }
+
   getPriceDiffClass(property: Property): string {
-    const diff = property.predictedPrice - property.price;
+    if (!property.precio || !property.predictedPrice) return 'text-slate-400';
+    const diff = property.predictedPrice - property.precio;
     if (diff > 0) return 'text-green-400';
     if (diff < 0) return 'text-red-400';
     return 'text-slate-400';
   }
 
   getPriceDiffPercentage(property: Property): string {
-    const diff = property.predictedPrice - property.price;
-    const percentage = ((diff / property.price) * 100).toFixed(1);
+    if (!property.precio || !property.predictedPrice) return 'N/A';
+    const diff = property.predictedPrice - property.precio;
+    const percentage = ((diff / property.precio) * 100).toFixed(1);
     return diff > 0 ? `+${percentage}%` : `${percentage}%`;
   }
 
-  handleExport() {
-    const headers = ['ID', 'Dirección', 'Ciudad', 'Barrio', 'Tipo', 'Área', 'Habitaciones', 'Baños', 'Precio', 'Precio Predicho', 'Año Construcción', 'Última Actualización'];
-    const rows = this.filteredData.map(p => [
-      p.id,
-      `"${p.address}"`,
-      p.city,
-      p.neighborhood,
-      p.type,
-      p.area,
-      p.bedrooms,
-      p.bathrooms,
-      p.price,
-      p.predictedPrice,
-      p.yearBuilt,
-      p.lastUpdated
-    ]);
+  handleImport() {
+    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.click();
+    }
+  }
 
-    const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'property-data.csv';
-    a.click();
-    window.URL.revokeObjectURL(url);
+  onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) return;
+
+    const file = input.files[0];
+
+    // Validate file type
+    if (!file.name.endsWith('.csv')) {
+      this.errorMessage = 'Por favor selecciona un archivo CSV válido';
+      return;
+    }
+
+    this.isLoading = true;
+    this.loadingMessage = `Importando ${file.name}...`;
+    this.successMessage = '';
+    this.errorMessage = '';
+    this.importErrors = [];
+
+    this.propertyService.importFromCSV(file).subscribe({
+      next: (result) => {
+        this.isLoading = false;
+        this.loadingMessage = '';
+
+        if (result.imported > 0) {
+          this.successMessage = `¡Éxito! Se importaron ${result.imported} propiedades`;
+          this.loadData(); // Refresh table
+        }
+
+        if (result.errors.length > 0) {
+          this.importErrors = result.errors;
+        }
+
+        // Clear file input
+        input.value = '';
+      },
+      error: (error) => {
+        this.isLoading = false;
+        this.loadingMessage = '';
+        this.errorMessage = error.error || 'Error al importar el archivo CSV';
+        input.value = '';
+      }
+    });
+  }
+
+  handleExport() {
+    const filters: PropertyFilters = {};
+    if (this.searchTerm) filters.search = this.searchTerm;
+    if (this.filterCity !== 'all') filters.city = this.filterCity;
+    if (this.filterType !== 'all') filters.type = this.filterType;
+
+    this.isLoading = true;
+    this.loadingMessage = 'Generando archivo CSV...';
+
+    this.propertyService.exportToCSV(filters).subscribe({
+      next: (blob) => {
+        this.isLoading = false;
+        this.loadingMessage = '';
+
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `propiedades-${new Date().toISOString().split('T')[0]}.csv`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+
+        this.successMessage = 'Archivo CSV exportado exitosamente';
+      },
+      error: (error) => {
+        this.isLoading = false;
+        this.loadingMessage = '';
+        this.errorMessage = 'Error al exportar el archivo CSV';
+      }
+    });
   }
  }

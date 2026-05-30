@@ -1,0 +1,108 @@
+<div class="min-h-screen flex items-center justify-center bg-slate-950 px-4">
+  <div class="max-w-md w-full space-y-8">
+    <!-- Logo y Título -->
+    <div class="text-center">
+      <h1 class="text-4xl font-bold text-white mb-2">PropPredict</h1>
+      <p class="text-slate-400">Inteligencia Inmobiliaria de Colombia</p>
+    </div>
+
+    <!-- Formulario de Login -->
+    <div class="bg-slate-900 border border-slate-800 rounded-xl p-8 shadow-2xl">
+      <h2 class="text-2xl font-semibold text-white mb-6 text-center">Iniciar Sesión</h2>
+
+      <!-- Alertas -->
+      <div *ngIf="errorMessage" class="mb-4 p-4 bg-red-900/20 border border-red-700/50 rounded-lg">
+        <div class="flex items-center gap-2">
+          <i class="alert-circle w-5 h-5 text-red-400"></i>
+          <span class="text-sm text-red-300">{{ errorMessage }}</span>
+        </div>
+      </div>
+
+      <div *ngIf="successMessage" class="mb-4 p-4 bg-green-900/20 border border-green-700/50 rounded-lg">
+        <div class="flex items-center gap-2">
+          <i class="check-circle w-5 h-5 text-green-400"></i>
+          <span class="text-sm text-green-300">{{ successMessage }}</span>
+        </div>
+      </div>
+
+      <form (ngSubmit)="onSubmit()" class="space-y-6">
+        <!-- Email -->
+        <div>
+          <label class="block text-sm font-medium text-slate-300 mb-2">
+            Correo Electrónico
+          </label>
+          <input type="email" [(ngModel)]="email" name="email" required placeholder="tu@email.com"
+            class="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" />
+        </div>
+
+        <!-- Contraseña -->
+        <div>
+          <label class="block text-sm font-medium text-slate-300 mb-2">
+            Contraseña
+          </label>
+          <div class="relative">
+            <input [type]="showPassword ? 'text' : 'password'" [(ngModel)]="password" name="password" required
+              placeholder="••••••••"
+              class="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" />
+            <button type="button" (click)="showPassword = !showPassword"
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-300 transition-colors">
+              <i [class]="showPassword ? 'eye-off w-5 h-5' : 'eye w-5 h-5'"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Recordar sesión -->
+        <div class="flex items-center justify-between">
+          <label class="flex items-center">
+            <input type="checkbox" [(ngModel)]="rememberMe" name="rememberMe"
+              class="w-4 h-4 bg-slate-800 border-slate-700 rounded text-blue-600 focus:ring-2 focus:ring-blue-500" />
+            <span class="ml-2 text-sm text-slate-300">Recordar sesión</span>
+          </label>
+          <a href="#" class="text-sm text-blue-400 hover:text-blue-300 transition-colors">
+            ¿Olvidaste tu contraseña?
+          </a>
+        </div>
+
+        <!-- Botón de Login -->
+        <button type="submit" [disabled]="loading"
+          class="w-full py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-slate-700 disabled:to-slate-700 text-white font-medium rounded-lg transition-all transform hover:scale-[1.02] active:scale-[0.98] disabled:cursor-not-allowed disabled:transform-none">
+          <span *ngIf="!loading">Iniciar Sesión</span>
+          <span *ngIf="loading" class="flex items-center justify-center gap-2">
+            <i class="loader w-5 h-5 animate-spin"></i>
+            Iniciando sesión...
+          </span>
+        </button>
+      </form>
+
+      <!-- Divisor -->
+      <div class="relative my-6">
+        <div class="absolute inset-0 flex items-center">
+          <div class="w-full border-t border-slate-700"></div>
+        </div>
+        <div class="relative flex justify-center text-sm">
+          <span class="px-2 bg-slate-900 text-slate-400">o</span>
+        </div>
+      </div>
+
+      <!-- Link a Registro -->
+      <div class="text-center">
+        <p class="text-sm text-slate-400">
+          ¿No tienes una cuenta?
+          <a (click)="goToRegister()" class="text-blue-400 hover:text-blue-300 font-medium cursor-pointer ml-1">
+            Regístrate aquí
+          </a>
+        </p>
+      </div>
+    </div>
+
+    <!-- Usuarios de Prueba -->
+    <div class="bg-slate-900/50 border border-slate-800 rounded-lg p-4">
+      <p class="text-xs text-slate-400 mb-2 font-medium">Usuarios de prueba:</p>
+      <div class="space-y-1 text-xs text-slate-500">
+        <div>Admin: admin proppredict.com / admin123</div>
+        <div>Analista: analyst proppredict.com / analyst123</div>
+        <div>Invitado: guest proppredict.com / guest123</div>
+      </div>
+    </div>
+  </div>
+</div>

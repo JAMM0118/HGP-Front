@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import {Component } from '@angular/core';
+import {Component, NgModule } from '@angular/core';
 import { NavigationItem } from '../../interfaces/models.interface';
 import ExecutiveSummary from "../../components/executive-summary/executive-summary";
 import PredictiveModelling from '../../components/predictive-modelling/predictive-modelling';
@@ -8,6 +8,8 @@ import GeospatialIntelligence from "../../components/geospatial-intelligence/geo
 import MlPerformance from "../../components/ml-performance/ml-performance";
 import AiInsights from "../../components/ai-insights/ai-insights";
 import DataTable from "../../components/data-table/data-table";
+import { LucideAngularModule } from 'lucide-angular';
+
 
 @Component({
   selector: 'app-home',
@@ -19,7 +21,7 @@ import DataTable from "../../components/data-table/data-table";
     GeospatialIntelligence,
     MlPerformance,
     AiInsights,
-    DataTable
+    DataTable,
   ],
   templateUrl: './home-component.html',
 })

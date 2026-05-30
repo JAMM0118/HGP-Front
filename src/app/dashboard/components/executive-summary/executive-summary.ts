@@ -12,7 +12,7 @@ export default class ExecutiveSummary {
  kpis: KPI[] = [
     {
       title: 'Total Propiedades Analizadas',
-      value: '284,567',
+      value: '1,984,567',
       change: '+12.3%',
       trend: 'up',
       icon: 'home'
