@@ -742,4 +742,87 @@ export class PropertyService {
       }>;
     }>(`${this.apiUrl}/market-insights`);
   }
+
+   /**
+   * Obtener datos geoespaciales con clusters de ciudades y barrios
+   *
+   * Backend URL: GET /api/properties/geospatial-data
+   *
+   * Response: {
+   *   total_propiedades_analizadas: number,
+   *   total_propiedades_con_precio: number,
+   *   ciudades_cluster: Array<{
+   *     ciudad: string,
+   *     cantidad_propiedades: number,
+   *     precio_promedio: number,
+   *     crecimiento_porcentual: number,
+   *     score_cluster: number
+   *   }>,
+   *   mejores_barrios: Array<{
+   *     barrio: string,
+   *     ciudad: string,
+   *     cantidad_propiedades: number,
+   *     precio_promedio: number,
+   *     crecimiento_porcentual: number,
+   *     score_cluster: number
+   *   }>,
+   *   analisis_porcentual_mapa_calor: {
+   *     intensidad_dominante: string,
+   *     alto: { rango: string, cantidad: number, porcentaje: number },
+   *     medio: { rango: string, cantidad: number, porcentaje: number },
+   *     bajo: { rango: string, cantidad: number, porcentaje: number }
+   *   }
+   * }
+   */
+  getGeospatialData(): Observable<{
+    total_propiedades_analizadas: number;
+    total_propiedades_con_precio: number;
+    ciudades_cluster: Array<{
+      ciudad: string;
+      cantidad_propiedades: number;
+      precio_promedio: number;
+      crecimiento_porcentual: number;
+      score_cluster: number;
+    }>;
+    mejores_barrios: Array<{
+      barrio: string;
+      ciudad: string;
+      cantidad_propiedades: number;
+      precio_promedio: number;
+      crecimiento_porcentual: number;
+      score_cluster: number;
+    }>;
+    analisis_porcentual_mapa_calor: {
+      intensidad_dominante: string;
+      alto: { rango: string; cantidad: number; porcentaje: number };
+      medio: { rango: string; cantidad: number; porcentaje: number };
+      bajo: { rango: string; cantidad: number; porcentaje: number };
+    };
+  }> {
+    return this.http.get<{
+      total_propiedades_analizadas: number;
+      total_propiedades_con_precio: number;
+      ciudades_cluster: Array<{
+        ciudad: string;
+        cantidad_propiedades: number;
+        precio_promedio: number;
+        crecimiento_porcentual: number;
+        score_cluster: number;
+      }>;
+      mejores_barrios: Array<{
+        barrio: string;
+        ciudad: string;
+        cantidad_propiedades: number;
+        precio_promedio: number;
+        crecimiento_porcentual: number;
+        score_cluster: number;
+      }>;
+      analisis_porcentual_mapa_calor: {
+        intensidad_dominante: string;
+        alto: { rango: string; cantidad: number; porcentaje: number };
+        medio: { rango: string; cantidad: number; porcentaje: number };
+        bajo: { rango: string; cantidad: number; porcentaje: number };
+      };
+    }>(`${this.apiUrl}/heatmap-stats`);
+  }
 }
