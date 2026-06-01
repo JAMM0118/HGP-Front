@@ -73,7 +73,7 @@
         <!-- Module Content -->
         <div class="flex-1 overflow-auto p-6 bg-slate-950">
           <!-- Mensaje para invitados -->
-          <div *ngIf="currentUser?.userType === 'invitado' && isRestrictedModule()"
+          <div *ngIf="currentUser?.role === 'invitado' && isRestrictedModule()"
                class="mb-4 p-4 bg-amber-900/20 border border-amber-700/50 rounded-lg">
             <div class="flex items-center gap-2">
               <lucide-icon [img]="alertIcon" class="w-5 h-5 shrink-0 text-amber-400"></lucide-icon>

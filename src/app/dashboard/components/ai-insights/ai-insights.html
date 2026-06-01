@@ -1,6 +1,24 @@
 <div class="space-y-6">
-      <!-- AI Insights Cards -->
-      <div class="grid grid-cols-2 gap-6">
+      <!-- Loading State -->
+      <div *ngIf="loading" class="flex items-center justify-center py-12">
+        <div class="text-center">
+          <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mb-4"></div>
+          <p class="text-slate-400">Cargando insights del dataset...</p>
+        </div>
+      </div>
+
+      <!-- Error State -->
+      <div *ngIf="errorMessage && !loading" class="p-6 bg-red-900/20 border border-red-700/50 rounded-xl">
+        <div class="flex items-center gap-2 text-red-300">
+          <lucide-icon [img]="alertIcon" class="w-5 h-5"></lucide-icon>
+          <span>{{ errorMessage }}</span>
+        </div>
+      </div>
+
+      <!-- Insights Content -->
+      <div *ngIf="!loading && !errorMessage" class="space-y-6">
+        <!-- Insights Cards -->
+        <div class="grid grid-cols-2 gap-6">
         <div *ngFor="let insight of insights"
              [class]="getInsightClasses(insight.color)">
           <div class="flex items-start justify-between mb-4">
@@ -17,19 +35,15 @@
           <p class="text-sm text-slate-300 mb-4">{{ insight.description }}</p>
           <div class="flex items-center justify-between">
             <div class="text-xs text-slate-400">Impacto: {{ insight.impact }}</div>
-            <button class="text-sm text-blue-400 hover:text-blue-300 flex items-center gap-1">
-              Ver Detalles
-              <lucide-icon [img]="chevronRightIcon" class="w-4 h-4"></lucide-icon>
-            </button>
-          </div>
+            </div>
         </div>
       </div>
 
       <!-- Recommendation Engine -->
       <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
         <div class="flex items-center gap-2 mb-6">
-          <lucide-icon [img]="lightbulbIcon" class="w-5 h-5 text-yellow-400"></lucide-icon>
-          <h3 class="text-lg font-semibold text-white">Recomendaciones de IA</h3>
+           <lucide-icon [img]="lightbulbIcon" class="w-5 h-5 text-yellow-400"></lucide-icon>
+          <h3 class="text-lg font-semibold text-white">Recomendaciones</h3>
         </div>
         <div class="space-y-4">
           <div *ngFor="let rec of recommendations" class="flex items-center justify-between p-4 bg-slate-800 rounded-lg">
@@ -42,9 +56,6 @@
               </div>
               <p class="text-sm text-slate-400">{{ rec.description }}</p>
             </div>
-            <button class="ml-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
-              {{ rec.action }}
-            </button>
           </div>
         </div>
       </div>
@@ -103,8 +114,8 @@
 
           <div class="mt-6 p-4 bg-green-900/20 border border-green-700/50 rounded-lg">
             <div class="flex items-center gap-2 text-sm text-green-300">
-              <lucide-icon [img]="targetIcon" class="w-4 h-4 text-green-300"></lucide-icon>
-              <span class="font-medium">Puntuación General de Riesgo: Bajo (79/100)</span>
+               <lucide-icon [img]="targetIcon" class="w-4 h-4 text-green-300"></lucide-icon>
+                 <span class="font-medium">Puntuación General de Riesgo: Bajo (79/100)</span>
             </div>
           </div>
         </div>
@@ -116,12 +127,13 @@
         <div class="grid grid-cols-3 gap-4">
           <div *ngFor="let item of marketTrends" class="p-4 bg-slate-800 rounded-lg">
             <div class="flex items-center gap-2 mb-2">
-              <lucide-icon [img]="item.icon" class="w-4 h-4 text-blue-400"></lucide-icon>
+              <lucide-icon [img]="item.icon " class="w-4 h-4 text-blue-400"></lucide-icon>
               <div class="text-sm font-semibold text-white">{{ item.trend }}</div>
             </div>
             <div class="text-2xl font-bold text-green-400 mb-1">{{ item.change }}</div>
             <div class="text-xs text-slate-400">{{ item.description }}</div>
           </div>
         </div>
+      </div>
       </div>
     </div>

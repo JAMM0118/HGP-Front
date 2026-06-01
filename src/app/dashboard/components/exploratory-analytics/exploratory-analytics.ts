@@ -4,6 +4,10 @@ import { ChartConfiguration, ChartData } from 'chart.js';
 import { NgChartsModule } from 'ng2-charts';
 import { PropertyService } from '../../../services/property.service';
 import { LucideAngularModule, CircleAlert } from 'lucide-angular';
+import { ViewChildren, QueryList, ElementRef, ViewChild } from '@angular/core';
+import { BaseChartDirective } from 'ng2-charts';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 
 @Component({
@@ -38,7 +42,16 @@ export default class ExploratoryAnalytics implements OnInit {
   priceVsBedroomsData?: ChartData<'bar'>;
   propertyTypesData?: ChartData<'bar'>;
 
-  constructor(private propertyService: PropertyService) {}
+  @ViewChildren(BaseChartDirective)
+  charts!: QueryList<BaseChartDirective>;
+
+  @ViewChild('correlationMatrix')
+  correlationMatrix!: ElementRef;
+
+  @ViewChild('dashboardContainer')
+  dashboardContainer!: ElementRef;
+
+  constructor(private propertyService: PropertyService) { }
 
   // Chart options
   barChartOptions: ChartConfiguration['options'] = {
@@ -468,4 +481,203 @@ export default class ExploratoryAnalytics implements OnInit {
     if (value >= 0.4) return baseClass + 'bg-yellow-500';
     return baseClass + 'bg-slate-700';
   }
- }
+  downloadChart(index: number, fileName: string): void {
+    const chart = this.charts.toArray()[index];
+
+    if (!chart?.chart?.canvas) {
+      console.error('No se encontró la gráfica');
+      return;
+    }
+
+    const canvas = chart.chart.canvas;
+
+    const link = document.createElement('a');
+    link.href = canvas.toDataURL('image/png');
+    link.download = `${fileName}.png`;
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  downloadAllCharts(): void {
+    const charts = this.charts.toArray();
+
+    charts.forEach((chart, index) => {
+      if (!chart?.chart?.canvas) return;
+
+      const link = document.createElement('a');
+
+      link.href = chart.chart.canvas.toDataURL('image/png');
+      link.download = `grafica-${index + 1}.png`;
+
+      setTimeout(() => {
+        link.click();
+      }, index * 500);
+    });
+  }
+  async downloadCorrelationMatrix() {
+    const canvas = await html2canvas(
+      this.correlationMatrix.nativeElement,
+      {
+        backgroundColor: '#0f172a',
+        scale: 2
+      }
+    );
+
+    const link = document.createElement('a');
+    link.href = canvas.toDataURL('image/png');
+    link.download = 'matriz-correlacion.png';
+    link.click();
+  }
+  async exportDashboardToPdf(): Promise<void> {
+    const pdf = new jsPDF('p', 'mm', 'a4');
+
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+
+    const margin = 10;
+    let currentY = 20;
+
+    pdf.setFontSize(18);
+    pdf.text('Reporte de Analítica Inmobiliaria', margin, currentY);
+
+    currentY += 15;
+
+    const chartDescriptions = [
+      {
+        title: 'Distribución de Precios',
+        description:
+          'Muestra la cantidad de propiedades agrupadas por rangos de precio.'
+      },
+      {
+        title: 'Tendencias del Mercado',
+        description:
+          'Presenta la evolución del precio promedio y la cantidad de propiedades entre 2022 y 2025.'
+      },
+      {
+        title: 'Precio Promedio por Área Construida',
+        description:
+          'Permite analizar la relación entre el área construida y el precio promedio.'
+      },
+      {
+        title: 'Precio Promedio por Habitaciones',
+        description:
+          'Compara el precio promedio según el número de habitaciones.'
+      },
+      {
+        title: 'Comparación por Área Construida',
+        description:
+          'Compara la distribución de casas y apartamentos según el tamaño de construcción.'
+      }
+    ];
+
+    const charts = this.charts.toArray();
+
+    for (let i = 0; i < charts.length; i++) {
+
+      const canvas = charts[i]?.chart?.canvas;
+
+      if (!canvas) continue;
+
+      const chartElement =
+  canvas.parentElement as HTMLElement;
+
+const chartCanvas = await html2canvas(
+  chartElement,
+  {
+    scale: 4,
+    backgroundColor: '#0f172a'
+  }
+);
+
+      const image = chartCanvas.toDataURL('image/png');
+
+      if (currentY > pageHeight - 120) {
+        pdf.addPage();
+        currentY = 20;
+      }
+
+      pdf.setFontSize(14);
+      pdf.text(chartDescriptions[i].title, margin, currentY);
+
+      currentY += 6;
+
+      pdf.setFontSize(10);
+
+      const lines = pdf.splitTextToSize(
+        chartDescriptions[i].description,
+        pageWidth - 20
+      );
+
+      pdf.text(lines, margin, currentY);
+
+      currentY += 10;
+
+      pdf.addImage(
+        image,
+        'PNG',
+        margin,
+        currentY,
+        180,
+        80,
+        undefined,
+        'SLOW'
+      );
+
+      currentY += 90;
+    }
+
+    // MATRIZ DE CORRELACIÓN
+
+    if (this.correlationMatrix?.nativeElement) {
+
+      const matrixCanvas = await html2canvas(
+        this.correlationMatrix.nativeElement,
+        {
+          scale: 2,
+          backgroundColor: '#0f172a'
+        }
+      );
+
+      const matrixImage = matrixCanvas.toDataURL('image/png');
+
+      if (currentY > pageHeight - 120) {
+        pdf.addPage();
+        currentY = 20;
+      }
+
+      pdf.setFontSize(14);
+      pdf.text('Matriz de Correlación', margin, currentY);
+
+      currentY += 6;
+
+      pdf.setFontSize(10);
+
+      const matrixDescription =
+        'Representa el grado de relación entre las variables analizadas. Valores cercanos a 1 indican correlación positiva fuerte y valores cercanos a 0 indican poca relación.';
+
+      const lines = pdf.splitTextToSize(
+        matrixDescription,
+        pageWidth - 20
+      );
+
+      pdf.text(lines, margin, currentY);
+
+      currentY += 10;
+
+      pdf.addImage(
+        matrixImage,
+        'PNG',
+        margin,
+        currentY,
+        180,
+        80,
+        undefined,
+        'SLOW'
+      );
+    }
+
+    pdf.save('reporte-analitica-inmobiliaria.pdf');
+  }
+}

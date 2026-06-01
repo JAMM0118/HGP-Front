@@ -7,7 +7,7 @@ export interface User {
   id: string;
   email: string;
   name: string;
-  userType: 'administrador' | 'analista_datos' | 'invitado';
+  role: 'administrador' | 'analista_datos' | 'invitado';
 }
 
 export interface LoginResponse {
@@ -77,15 +77,15 @@ export class AuthService {
    * Registrar nuevo usuario
    *
    * Backend URL: POST /api/auth/register
-   * Body: { name: string, email: string, password: string, userType: string }
+   * Body: { name: string, email: string, password: string, role: string }
    * Response: { user: User, token: string, message?: string }
    */
-  register(name: string, email: string, password: string, userType: 'administrador' | 'analista_datos' | 'invitado'): Observable<User> {
+  register(name: string, email: string, password: string, role: 'administrador' | 'analista_datos' | 'invitado'): Observable<User> {
     return this.http.post<RegisterResponse>(`${this.apiUrl}/register`, {
       name,
       email,
       password,
-      userType
+      role
     }).pipe(
       map(response => {
         // Guardar usuario y token en localStorage
@@ -135,6 +135,6 @@ export class AuthService {
   hasRole(roles: string[]): boolean {
     const user = this.currentUserValue;
     if (!user) return false;
-    return roles.includes(user.userType);
+    return roles.includes(user.role);
   }
 }

@@ -1,8 +1,24 @@
-<div class="space-y-6">
+<div  #dashboardContainer class="space-y-6">
+  <div class="flex justify-end gap-2 mb-4">
+  <button
+    (click)="exportDashboardToPdf()"
+    class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg"
+  >
+    Descargar PDF
+  </button>
+    <button (click)="downloadAllCharts()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg">
+      Descargar todas las gráficas
+    </button>
+  </div>
   <!-- Price Distribution -->
   <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
-    <h3 class="text-lg font-semibold text-white mb-4">Distribución de Precios</h3>
-
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-lg font-semibold text-white mb-4">Distribución de Precios</h3>
+      <button (click)="downloadChart(0, 'distribucion-precios')"
+        class="px-3 py-1 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg">
+        Exportar
+      </button>
+    </div>
     <!-- Loading State -->
     <div *ngIf="isLoadingPriceDistribution" class="h-[300px] flex items-center justify-center">
       <div class="animate-spin w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full"></div>
@@ -25,8 +41,14 @@
 
   <!-- Time Series Trends -->
   <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
-    <h3 class="text-lg font-semibold text-white mb-4">Tendencias del Mercado (2022-2025)</h3>
+    <div class="flex justify-between items-center mb-4">
 
+      <h3 class="text-lg font-semibold text-white mb-4">Tendencias del Mercado (2022-2025)</h3>
+      <button (click)="downloadChart(1, 'tendencias-mercado')"
+        class="px-3 py-1 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg">
+        Exportar
+      </button>
+    </div>
     <!-- Loading State -->
     <div *ngIf="isLoadingMarketTrends" class="h-[350px] flex items-center justify-center">
       <div class="animate-spin w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full"></div>
@@ -50,8 +72,15 @@
   <!-- Scatter Plots -->
   <div class="grid grid-cols-2 gap-6">
     <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
-      <h3 class="text-lg font-semibold text-white mb-4">Precio Promedio por Área Construida</h3>
+      <div class="flex justify-between items-center mb-4">
 
+        <h3 class="text-lg font-semibold text-white mb-4">Precio Promedio por Área Construida</h3>
+        <button (click)="downloadChart(2, 'precio-area')"
+          class="px-3 py-1 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg">
+          Exportar
+        </button>
+
+      </div>
       <!-- Loading State -->
       <div *ngIf="isLoadingPriceByArea" class="h-[300px] flex items-center justify-center">
         <div class="animate-spin w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full"></div>
@@ -73,7 +102,14 @@
     </div>
 
     <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
-      <h3 class="text-lg font-semibold text-white mb-4">Precio Promedio por Habitaciones</h3>
+      <div class="flex justify-between items-center mb-4">
+
+        <h3 class="text-lg font-semibold text-white mb-4">Precio Promedio por Habitaciones</h3>
+        <button (click)="downloadChart(3, 'precio-habitaciones')"
+          class="px-3 py-1 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg">
+          Exportar
+        </button>
+      </div>
 
       <!-- Loading State -->
       <div *ngIf="isLoadingPriceByBedrooms" class="h-[300px] flex items-center justify-center">
@@ -99,8 +135,14 @@
   <!-- Property Types and Correlation Matrix -->
   <div class="grid grid-cols-2 gap-6">
     <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
-      <h3 class="text-lg font-semibold text-white mb-4">Comparación por Área Construida</h3>
+      <div class="flex justify-between items-center mb-4">
 
+        <h3 class="text-lg font-semibold text-white mb-4">Comparación por Área Construida</h3>
+        <button (click)="downloadChart(4, 'comparacion-area')"
+          class="px-3 py-1 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg">
+          Exportar
+        </button>
+      </div>
       <!-- Loading State -->
       <div *ngIf="isLoadingAreaComparison" class="h-[300px] flex items-center justify-center">
         <div class="animate-spin w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full"></div>
@@ -122,10 +164,16 @@
     </div>
 
     <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
-      <h3 class="text-lg font-semibold text-white mb-4">Matriz de Correlación</h3>
-
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-semibold text-white mb-4">Matriz de Correlación</h3>
+        <button (click)="downloadCorrelationMatrix()"
+        class="px-3 py-1 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg">
+          Exportar
+        </button>
+      </div>
       <!-- Loading State -->
-      <div *ngIf="isLoadingCorrelation" class="h-[280px] flex items-center justify-center">
+      <div
+      *ngIf="isLoadingCorrelation" class="h-[280px] flex items-center justify-center">
         <div class="animate-spin w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full"></div>
       </div>
 
@@ -138,7 +186,9 @@
       </div>
 
       <!-- Data -->
-      <div *ngIf="!isLoadingCorrelation && !correlationError && correlationData" class="space-y-2">
+      <div
+        #correlationMatrix
+      *ngIf="!isLoadingCorrelation && !correlationError && correlationData" class="space-y-2">
         <div class="grid grid-cols-5 gap-2 text-xs font-medium text-slate-400 text-center">
           <div></div>
           <div>Precio</div>

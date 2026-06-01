@@ -56,9 +56,9 @@ export default class DashboardComponent {
     { id: 'executive', label: 'Resumen Ejecutivo', icon: LayoutDashboard },
     { id: 'analytics', label: 'Análisis de Datos', icon: BarChart3 },
     { id: 'geospatial', label: 'Inteligencia Geoespacial', icon: Map },
-    { id: 'prediction', label: 'Modelado Predictivo', icon: Brain, requiredRoles: ['admin', 'analyst'] },
-    { id: 'ml-performance', label: 'Rendimiento ML', icon: Activity, requiredRoles: ['admin', 'analyst'] },
-    { id: 'insights', label: 'Insights de IA', icon: Lightbulb },
+    { id: 'prediction', label: 'Modelado Predictivo', icon: Brain, requiredRoles: ['administrador', 'analista_datos'] },
+    { id: 'ml-performance', label: 'Rendimiento ML', icon: Activity, requiredRoles: ['administrador', 'analista_datos'] },
+    { id: 'insights', label: 'Insights del Dataset', icon: Lightbulb },
     { id: 'data-table', label: 'Registros de Datos', icon: Table }
   ];
 
@@ -93,22 +93,24 @@ export default class DashboardComponent {
 
   getUserTypeLabel(): string {
     if (!this.currentUser) return '';
+
     const labels: Record<string, string> = {
-      admin: 'Administrador',
-      analyst: 'Analista de Datos',
-      guest: 'Invitado'
+      administrador: 'Administrador',
+      analista_datos: 'Analista de Datos',
+      invitado: 'Invitado'
     };
-    return labels[this.currentUser.userType] || '';
+    console.log('User type:', this.currentUser.role);
+    return labels[this.currentUser.role] || '';
   }
 
   getUserBadgeClass(): string {
     if (!this.currentUser) return '';
     const classes: Record<string, string> = {
-      admin: 'bg-blue-500/20 text-blue-400',
-      analyst: 'bg-purple-500/20 text-purple-400',
-      guest: 'bg-green-500/20 text-green-400'
+      administrador: 'bg-blue-500/20 text-blue-400',
+      analista_datos: 'bg-purple-500/20 text-purple-400',
+      invitado: 'bg-green-500/20 text-green-400'
     };
-    return classes[this.currentUser.userType] || '';
+    return classes[this.currentUser.role] || '';
   }
 
   isRestrictedModule(): boolean {

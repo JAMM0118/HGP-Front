@@ -563,4 +563,183 @@ export class PropertyService {
       }>;
     }>(`${this.apiUrl}/correlation-matrix-data`);
   }
+
+  /**
+   * Obtener insights del dataset generados por análisis de datos
+   *
+   * Backend URL: GET /api/properties/dataset-insights
+   *
+   * Response: {
+   *   total_ciudades_analizadas: number,
+   *   insights: {
+   *     zona_crecimiento_fuerte: {
+   *       ciudad: string,
+   *       cantidad_propiedades: number,
+   *       precio_promedio: number,
+   *       precio_promedio_por_m2: number,
+   *       volatilidad: number,
+   *       crecimiento_porcentual: number,
+   *       primer_anio: number,
+   *       ultimo_anio: number
+   *     },
+   *     propiedades_subvaloradas: Array<{
+   *       ciudad: string,
+   *       cantidad_propiedades: number,
+   *       precio_promedio: number,
+   *       precio_promedio_por_m2: number,
+   *       volatilidad: number,
+   *       crecimiento_porcentual: number,
+   *       primer_anio: number,
+   *       ultimo_anio: number
+   *     }>,
+   *     volatilidad_precios: {
+   *       ciudad: string,
+   *       cantidad_propiedades: number,
+   *       precio_promedio: number,
+   *       precio_promedio_por_m2: number,
+   *       volatilidad: number,
+   *       crecimiento_porcentual: number,
+   *       primer_anio: number,
+   *       ultimo_anio: number
+   *     },
+   *     mercado_emergente: {
+   *       ciudad: string,
+   *       cantidad_propiedades: number,
+   *       precio_promedio: number,
+   *       precio_promedio_por_m2: number,
+   *       volatilidad: number,
+   *       crecimiento_porcentual: number,
+   *       primer_anio: number,
+   *       ultimo_anio: number
+   *     },
+   *     recomendaciones_inversion: string[],
+   *     tendencias_generales: string[]
+   *   },
+   *   detalle_por_ciudad: Array<{
+   *     ciudad: string,
+   *     cantidad_propiedades: number,
+   *     precio_promedio: number,
+   *     precio_promedio_por_m2: number,
+   *     volatilidad: number,
+   *     crecimiento_porcentual: number,
+   *     primer_anio: number,
+   *     ultimo_anio: number
+   *   }>
+   * }
+   */
+  getDatasetInsights(): Observable<{
+    total_ciudades_analizadas: number;
+    insights: {
+      zona_crecimiento_fuerte: {
+        ciudad: string;
+        cantidad_propiedades: number;
+        precio_promedio: number;
+        precio_promedio_por_m2: number;
+        volatilidad: number;
+        crecimiento_porcentual: number;
+        primer_anio: number;
+        ultimo_anio: number;
+      };
+      propiedades_subvaloradas: Array<{
+        ciudad: string;
+        cantidad_propiedades: number;
+        precio_promedio: number;
+        precio_promedio_por_m2: number;
+        volatilidad: number;
+        crecimiento_porcentual: number;
+        primer_anio: number;
+        ultimo_anio: number;
+      }>;
+      volatilidad_precios: {
+        ciudad: string;
+        cantidad_propiedades: number;
+        precio_promedio: number;
+        precio_promedio_por_m2: number;
+        volatilidad: number;
+        crecimiento_porcentual: number;
+        primer_anio: number;
+        ultimo_anio: number;
+      };
+      mercado_emergente: {
+        ciudad: string;
+        cantidad_propiedades: number;
+        precio_promedio: number;
+        precio_promedio_por_m2: number;
+        volatilidad: number;
+        crecimiento_porcentual: number;
+        primer_anio: number;
+        ultimo_anio: number;
+      };
+      recomendaciones_inversion: string[];
+      tendencias_generales: string[];
+    };
+    detalle_por_ciudad: Array<{
+      ciudad: string;
+      cantidad_propiedades: number;
+      precio_promedio: number;
+      precio_promedio_por_m2: number;
+      volatilidad: number;
+      crecimiento_porcentual: number;
+      primer_anio: number;
+      ultimo_anio: number;
+    }>;
+  }> {
+    return this.http.get<{
+      total_ciudades_analizadas: number;
+      insights: {
+        zona_crecimiento_fuerte: {
+          ciudad: string;
+          cantidad_propiedades: number;
+          precio_promedio: number;
+          precio_promedio_por_m2: number;
+          volatilidad: number;
+          crecimiento_porcentual: number;
+          primer_anio: number;
+          ultimo_anio: number;
+        };
+        propiedades_subvaloradas: Array<{
+          ciudad: string;
+          cantidad_propiedades: number;
+          precio_promedio: number;
+          precio_promedio_por_m2: number;
+          volatilidad: number;
+          crecimiento_porcentual: number;
+          primer_anio: number;
+          ultimo_anio: number;
+        }>;
+        volatilidad_precios: {
+          ciudad: string;
+          cantidad_propiedades: number;
+          precio_promedio: number;
+          precio_promedio_por_m2: number;
+          volatilidad: number;
+          crecimiento_porcentual: number;
+          primer_anio: number;
+          ultimo_anio: number;
+        };
+        mercado_emergente: {
+          ciudad: string;
+          cantidad_propiedades: number;
+          precio_promedio: number;
+          precio_promedio_por_m2: number;
+          volatilidad: number;
+          crecimiento_porcentual: number;
+          primer_anio: number;
+          ultimo_anio: number;
+        };
+        recomendaciones_inversion: string[];
+        tendencias_generales: string[];
+      };
+      detalle_por_ciudad: Array<{
+        ciudad: string;
+        cantidad_propiedades: number;
+        precio_promedio: number;
+        precio_promedio_por_m2: number;
+        volatilidad: number;
+        crecimiento_porcentual: number;
+        primer_anio: number;
+        ultimo_anio: number;
+      }>;
+    }>(`${this.apiUrl}/market-insights`);
+  }
 }

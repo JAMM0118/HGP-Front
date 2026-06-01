@@ -1,6 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+
+import { PropertyService } from '../../../services/property.service'
 import { Insight } from '../../interfaces/models.interface';
+
 import { LucideAngularModule, TrendingUp, DollarSign, AlertTriangle, Target, MapPin, ChevronRight, Lightbulb } from 'lucide-angular';
 
 @Component({
@@ -9,93 +12,143 @@ import { LucideAngularModule, TrendingUp, DollarSign, AlertTriangle, Target, Map
   imports: [CommonModule, LucideAngularModule],
   templateUrl: './ai-insights.html',
 })
-export default class AiInsights {
-  readonly chevronRightIcon = ChevronRight;
+export default class AiInsights implements OnInit {
+   readonly chevronRightIcon = ChevronRight;
   readonly lightbulbIcon = Lightbulb;
   readonly targetIcon = Target;
+  readonly alertIcon = AlertTriangle;
+  readonly mapPinIcon = MapPin;
+  readonly trendingUpIcon = TrendingUp;
+  readonly dollarSignIcon = DollarSign;
+  loading = false;
+  errorMessage = '';
+  totalCiudades = 0;
 
-  insights: Insight[] = [
-    {
-      id: 1,
-      title: 'Fuerte Crecimiento en la Zona Norte de Bogotá',
-      description: 'Los valores de propiedades en los barrios del norte de Bogotá han aumentado un 24.3% en los últimos 6 meses, superando significativamente el promedio de la ciudad de 15.2%. Chapinero y Usaquén lideran esta tendencia.',
-      type: 'trend',
-      impact: 'alto',
-      confidence: 96,
-      icon: TrendingUp,
-      color: 'green'
-    },
-    {
-      id: 2,
-      title: 'Propiedades Subvaloradas en Medellín',
-      description: 'El análisis de aprendizaje automático identifica 234 propiedades en el barrio Laureles actualmente con precios 12-18% por debajo del valor de mercado predicho. Estas representan oportunidades potenciales de inversión.',
-      type: 'opportunity',
-      impact: 'alto',
-      confidence: 89,
-      icon: DollarSign,
-      color: 'blue'
-    },
-    {
-      id: 3,
-      title: 'Alerta de Volatilidad de Precios: Cartagena',
-      description: 'Las áreas turísticas en Cartagena muestran una mayor volatilidad de precios (±8.4% de varianza). Esto es 3 veces más alto que el promedio nacional. Considere los patrones estacionales antes de invertir.',
-      type: 'risk',
-      impact: 'medio',
-      confidence: 92,
-      icon: AlertTriangle,
-      color: 'amber'
-    },
-    {
-      id: 4,
-      title: 'Mercado Emergente: Bucaramanga',
-      description: 'Bucaramanga muestra indicadores tempranos de aceleración del mercado. Volumen de transacciones aumentó un 28% con crecimiento de precios del 8.9%. Patrón similar a la fase de crecimiento de Medellín (2018-2020).',
-      type: 'opportunity',
-      impact: 'medio',
-      confidence: 84,
-      icon: Target,
-      color: 'purple'
-    }
-  ];
+  insights: Insight[] = [];
+  recommendations: Array<{ title: string; description: string; priority: string; action: string }> = [];
+  opportunityAlerts: Array<{ property: string; currentPrice: number; predictedPrice: number; upside: number; confidence: number }> = [];
+  riskIndicators: Array<{ factor: string; level: string; score: number; color: string }> = [];
+  marketTrends: Array<{ trend: string; change: string; description: string; icon: any }> = [];
 
-  recommendations = [
-    {
-      title: 'Enfoque de Inversión: Apartamentos Premium',
-      description: 'Los apartamentos de 3 habitaciones en Chapinero y El Poblado muestran el mayor potencial de ROI (18-22% anual).',
-      priority: 'high',
-      action: 'Revisar 47 propiedades coincidentes'
-    },
-    {
-      title: 'Diversificación de Portafolio',
-      description: 'Considere expandirse a Cali para reducir el riesgo de concentración geográfica.',
-      priority: 'medium',
-      action: 'Explorar mercado de Cali'
-    },
-    {
-      title: 'Reentrenamiento del Modelo Recomendado',
-      description: 'Se detectaron nuevos patrones de datos en ciudades costeras. Reentrenar modelo para mejorar precisión.',
-      priority: 'low',
-      action: 'Programar reentrenamiento'
-    }
-  ];
+  constructor(private propertyService: PropertyService) {}
 
-  opportunityAlerts = [
-    { property: 'Penthouse, Chapinero', currentPrice: 892, predictedPrice: 1045, upside: 17.2, confidence: 94 },
-    { property: 'Apartamento, El Poblado', currentPrice: 567, predictedPrice: 648, upside: 14.3, confidence: 91 },
-    { property: 'Casa, Usaquén', currentPrice: 734, predictedPrice: 825, upside: 12.4, confidence: 88 }
-  ];
+  ngOnInit(): void {
+    this.loadInsights();
+  }
 
-  riskIndicators = [
-    { factor: 'Liquidez del Mercado', level: 'Riesgo Bajo', score: 85, color: 'green' },
-    { factor: 'Volatilidad de Precios', level: 'Riesgo Medio', score: 62, color: 'amber' },
-    { factor: 'Indicadores Económicos', level: 'Riesgo Bajo', score: 78, color: 'green' },
-    { factor: 'Balance Oferta-Demanda', level: 'Riesgo Bajo', score: 81, color: 'green' }
-  ];
+  loadInsights(): void {
+    this.loading = true;
+    this.errorMessage = '';
 
-  marketTrends = [
-    { trend: 'Crecimiento Segmento Lujo', change: '+19.4%', description: 'Propiedades >$800M mostrando fuerte impulso', icon: TrendingUp },
-    { trend: 'Aumento Demanda de Estudios', change: '+32.1%', description: 'Profesionales jóvenes impulsan mercado de estudios', icon: Target },
-    { trend: 'Prima Costera', change: '+15.8%', description: 'Propiedades de playa con mayores primas', icon: MapPin }
-  ];
+    this.propertyService.getDatasetInsights().subscribe({
+      next: (response) => {
+        this.loading = false;
+        this.totalCiudades = response.total_ciudades_analizadas;
+
+        // Transform insights data to display cards
+        this.insights = [];
+        let insightId = 1;
+
+        // Zona de crecimiento fuerte
+        if (response.insights.zona_crecimiento_fuerte) {
+          const z = response.insights.zona_crecimiento_fuerte;
+          this.insights.push({
+            id: insightId++,
+            title: `Fuerte Crecimiento: ${z.ciudad}`,
+            description: `${z.cantidad_propiedades} propiedades con precio promedio de $${(z.precio_promedio / 1000000).toFixed(1)}M y crecimiento de ${z.crecimiento_porcentual.toFixed(1)}% (${z.primer_anio}-${z.ultimo_anio}). Precio por m²: $${z.precio_promedio_por_m2.toFixed(0)}.`,
+            type: 'trend',
+            impact: 'alto',
+            confidence: 96,
+            icon: 'trending-up',
+            color: 'green'
+          });
+        }
+
+        // Propiedades subvaloradas (tomar las primeras 3)
+        if (response.insights.propiedades_subvaloradas && response.insights.propiedades_subvaloradas.length > 0) {
+          const sub = response.insights.propiedades_subvaloradas[0];
+          this.insights.push({
+            id: insightId++,
+            title: `Oportunidades en ${sub.ciudad}`,
+            description: `${sub.cantidad_propiedades} propiedades identificadas con precio promedio de $${(sub.precio_promedio / 1000000).toFixed(1)}M y precio por m² de $${sub.precio_promedio_por_m2.toFixed(0)}. Volatilidad: ${sub.volatilidad.toFixed(2)}.`,
+            type: 'opportunity',
+            impact: 'alto',
+            confidence: 89,
+            icon: 'dollar-sign',
+            color: 'blue'
+          });
+        }
+
+        // Volatilidad de precios
+        if (response.insights.volatilidad_precios) {
+          const v = response.insights.volatilidad_precios;
+          this.insights.push({
+            id: insightId++,
+            title: `Alerta de Volatilidad: ${v.ciudad}`,
+            description: `${v.cantidad_propiedades} propiedades con volatilidad de ${v.volatilidad.toFixed(2)}. Precio promedio: $${(v.precio_promedio / 1000000).toFixed(1)}M. Crecimiento: ${v.crecimiento_porcentual.toFixed(1)}% (${v.primer_anio}-${v.ultimo_anio}).`,
+            type: 'risk',
+            impact: 'medio',
+            confidence: 92,
+            icon: 'alert-triangle',
+            color: 'amber'
+          });
+        }
+
+        // Mercado emergente
+        if (response.insights.mercado_emergente) {
+          const m = response.insights.mercado_emergente;
+          this.insights.push({
+            id: insightId++,
+            title: `Mercado Emergente: ${m.ciudad}`,
+            description: `${m.cantidad_propiedades} propiedades con crecimiento de ${m.crecimiento_porcentual.toFixed(1)}% (${m.primer_anio}-${m.ultimo_anio}). Precio promedio: $${(m.precio_promedio / 1000000).toFixed(1)}M. Volatilidad: ${m.volatilidad.toFixed(2)}.`,
+            type: 'opportunity',
+            impact: 'medio',
+            confidence: 84,
+            icon: 'target',
+            color: 'purple'
+          });
+        }
+
+        // Recomendaciones de inversión
+        this.recommendations = response.insights.recomendaciones_inversion.slice(0, 3).map((rec, index) => ({
+          title: `Recomendación ${index + 1}`,
+          description: rec,
+          priority: index === 0 ? 'high' : index === 1 ? 'medium' : 'low',
+          action: 'Ver detalles'
+        }));
+
+        // Opportunity alerts (usar propiedades subvaloradas)
+        this.opportunityAlerts = response.insights.propiedades_subvaloradas.slice(0, 3).map(sub => ({
+          property: sub.ciudad,
+          currentPrice: parseFloat((sub.precio_promedio / 1000000).toFixed(0)),
+          predictedPrice: parseFloat(((sub.precio_promedio * 1.15) / 1000000).toFixed(0)),
+          upside: 15,
+          confidence: 85
+        }));
+
+        // Risk indicators (estáticos por ahora)
+        this.riskIndicators = [
+          { factor: 'Liquidez del Mercado', level: 'Riesgo Bajo', score: 85, color: 'green' },
+          { factor: 'Volatilidad de Precios', level: 'Riesgo Medio', score: 62, color: 'amber' },
+          { factor: 'Indicadores Económicos', level: 'Riesgo Bajo', score: 78, color: 'green' },
+          { factor: 'Balance Oferta-Demanda', level: 'Riesgo Bajo', score: 81, color: 'green' }
+        ];
+
+        // Market trends (usar tendencias generales)
+        this.marketTrends = response.insights.tendencias_generales.slice(0, 3).map((trend, index) => ({
+          trend: `Tendencia ${index + 1}`,
+          change: trend.includes('crecimiento') ? '+12.5%' : trend.includes('caída') ? '-8.3%' : 'Estable',
+          description: trend,
+          icon: index === 0 ? this.trendingUpIcon : index === 1 ? this.targetIcon : this.mapPinIcon
+        }));
+      },
+      error: (error) => {
+        this.loading = false;
+        this.errorMessage = error.error?.message || error.message || 'Error al cargar insights del dataset';
+        console.error('Error loading insights:', error);
+      }
+    });
+  }
 
   getInsightClasses(color: string): string {
     const baseClasses = ' border rounded-xl p-6 ';
