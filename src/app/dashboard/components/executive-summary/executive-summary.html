@@ -4,10 +4,10 @@
     <div *ngFor="let kpi of kpis" class="bg-slate-900 border border-slate-800 rounded-xl p-6">
       <div class="flex items-start justify-between mb-4">
         <div class="p-3 bg-slate-800 rounded-lg text-blue-400">
-          <i [class]="kpi.icon + ' w-6 h-6'"></i>
+            <lucide-icon [img]="kpi.icon" class="w-6 h-6"></lucide-icon>
         </div>
         <div [class]="'flex items-center gap-1 text-sm ' + (kpi.trend === 'up' ? 'text-green-400' : 'text-red-400')">
-          <i [class]="(kpi.trend === 'up' ? 'trending-up' : 'trending-down') + ' w-4 h-4'"></i>
+          <lucide-icon [img]="kpi.trend === 'up' ? upTrendIcon : downTrendIcon" class="w-4 h-4"></lucide-icon>
           <span>{{ kpi.change }}</span>
         </div>
       </div>
@@ -19,7 +19,20 @@
   <!-- Regional Overview -->
   <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
     <h3 class="text-lg font-semibold text-white mb-6">Panorama del Mercado Regional</h3>
-    <div class="grid grid-cols-4 gap-4">
+
+    <!-- Loading State -->
+    <div *ngIf="isLoadingRegionalData" class="flex items-center justify-center py-8">
+      <div class="animate-spin w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="regionalDataError" class="bg-red-900/30 border border-red-700 rounded-lg p-3 flex items-start gap-2">
+      <lucide-icon [img]="alertIcon" class="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5"></lucide-icon>
+      <p class="text-sm text-red-300">{{ regionalDataError }}</p>
+    </div>
+
+    <!-- Data -->
+    <div *ngIf="!isLoadingRegionalData && !regionalDataError" class="grid grid-cols-4 gap-4">
       <div *ngFor="let region of regionalData" class="bg-slate-800 rounded-lg p-4">
         <div class="font-semibold text-white mb-2">{{ region.city }}</div>
         <div class="space-y-1 text-sm">
@@ -44,7 +57,20 @@
   <div class="grid grid-cols-2 gap-6">
     <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
       <h3 class="text-lg font-semibold text-white mb-4">Mejores Barrios por Rendimiento</h3>
-      <div class="space-y-3">
+
+      <!-- Loading State -->
+      <div *ngIf="isLoadingNeighborhoods" class="flex items-center justify-center py-8">
+        <div class="animate-spin w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+      </div>
+
+      <!-- Error State -->
+      <div *ngIf="neighborhoodsError" class="bg-red-900/30 border border-red-700 rounded-lg p-3 flex items-start gap-2">
+        <lucide-icon [img]="alertIcon" class="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5"></lucide-icon>
+        <p class="text-sm text-red-300">{{ neighborhoodsError }}</p>
+      </div>
+
+      <!-- Data -->
+      <div *ngIf="!isLoadingNeighborhoods && !neighborhoodsError" class="space-y-3">
         <div *ngFor="let neighborhood of topNeighborhoods"
           class="flex items-center justify-between p-3 bg-slate-800 rounded-lg">
           <div>
@@ -58,7 +84,20 @@
 
     <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
       <h3 class="text-lg font-semibold text-white mb-4">Distribución por Tipo de Propiedad</h3>
-      <div class="space-y-3">
+
+      <!-- Loading State -->
+      <div *ngIf="isLoadingPropertyTypes" class="flex items-center justify-center py-8">
+        <div class="animate-spin w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+      </div>
+
+      <!-- Error State -->
+      <div *ngIf="propertyTypesError" class="bg-red-900/30 border border-red-700 rounded-lg p-3 flex items-start gap-2">
+        <lucide-icon [img]="alertIcon" class="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5"></lucide-icon>
+        <p class="text-sm text-red-300">{{ propertyTypesError }}</p>
+      </div>
+
+      <!-- Data -->
+      <div *ngIf="!isLoadingPropertyTypes && !propertyTypesError" class="space-y-3">
         <div *ngFor="let propType of propertyTypes" class="space-y-2">
           <div class="flex items-center justify-between text-sm">
             <span class="text-slate-300">{{ propType.type }}</span>

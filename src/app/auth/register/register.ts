@@ -6,6 +6,7 @@ import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-register',
+  standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './register.html',
    styles: [`
@@ -19,9 +20,9 @@ import { AuthService } from '../../services/auth.service';
   `],
 })
 export default class Register {
-   name = '';
+    name = '';
   email = '';
-  userType: 'admin' | 'analyst' | 'guest' | '' = '';
+  userType: 'administrador' | 'analista_datos' | 'invitado' | '' = '';
   password = '';
   confirmPassword = '';
   acceptTerms = false;
@@ -67,7 +68,7 @@ export default class Register {
       this.name,
       this.email,
       this.password,
-      this.userType as 'admin' | 'analyst' | 'guest'
+      this.userType as 'administrador' | 'analista_datos' | 'invitado'
     ).subscribe({
       next: (user) => {
         this.loading = false;

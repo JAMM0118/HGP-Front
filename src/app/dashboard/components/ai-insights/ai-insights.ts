@@ -1,13 +1,19 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { Insight } from '../../interfaces/models.interface';
+import { LucideAngularModule, TrendingUp, DollarSign, AlertTriangle, Target, MapPin, ChevronRight, Lightbulb } from 'lucide-angular';
 
 @Component({
   selector: 'app-ai-insights',
-  imports: [CommonModule],
+  standalone: true,
+  imports: [CommonModule, LucideAngularModule],
   templateUrl: './ai-insights.html',
 })
 export default class AiInsights {
+  readonly chevronRightIcon = ChevronRight;
+  readonly lightbulbIcon = Lightbulb;
+  readonly targetIcon = Target;
+
   insights: Insight[] = [
     {
       id: 1,
@@ -16,7 +22,7 @@ export default class AiInsights {
       type: 'trend',
       impact: 'alto',
       confidence: 96,
-      icon: 'trending-up',
+      icon: TrendingUp,
       color: 'green'
     },
     {
@@ -26,7 +32,7 @@ export default class AiInsights {
       type: 'opportunity',
       impact: 'alto',
       confidence: 89,
-      icon: 'dollar-sign',
+      icon: DollarSign,
       color: 'blue'
     },
     {
@@ -36,7 +42,7 @@ export default class AiInsights {
       type: 'risk',
       impact: 'medio',
       confidence: 92,
-      icon: 'alert-triangle',
+      icon: AlertTriangle,
       color: 'amber'
     },
     {
@@ -46,7 +52,7 @@ export default class AiInsights {
       type: 'opportunity',
       impact: 'medio',
       confidence: 84,
-      icon: 'target',
+      icon: Target,
       color: 'purple'
     }
   ];
@@ -86,9 +92,9 @@ export default class AiInsights {
   ];
 
   marketTrends = [
-    { trend: 'Crecimiento Segmento Lujo', change: '+19.4%', description: 'Propiedades >$800M mostrando fuerte impulso', icon: 'trending-up' },
-    { trend: 'Aumento Demanda de Estudios', change: '+32.1%', description: 'Profesionales jóvenes impulsan mercado de estudios', icon: 'target' },
-    { trend: 'Prima Costera', change: '+15.8%', description: 'Propiedades de playa con mayores primas', icon: 'map-pin' }
+    { trend: 'Crecimiento Segmento Lujo', change: '+19.4%', description: 'Propiedades >$800M mostrando fuerte impulso', icon: TrendingUp },
+    { trend: 'Aumento Demanda de Estudios', change: '+32.1%', description: 'Profesionales jóvenes impulsan mercado de estudios', icon: Target },
+    { trend: 'Prima Costera', change: '+15.8%', description: 'Propiedades de playa con mayores primas', icon: MapPin }
   ];
 
   getInsightClasses(color: string): string {

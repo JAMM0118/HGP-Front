@@ -1,20 +1,24 @@
 import { CommonModule } from '@angular/common';
-import {Component } from '@angular/core';
+import { Component } from '@angular/core';
 import { ChartConfiguration } from 'chart.js';
 import { NgChartsModule } from 'ng2-charts';
+import { LucideAngularModule, Activity, CircleCheck } from 'lucide-angular';
 
 
 @Component({
   selector: 'app-ml-performance',
-  imports: [CommonModule, NgChartsModule],
+  standalone: true,
+  imports: [CommonModule, NgChartsModule, LucideAngularModule],
   templateUrl: './ml-performance.html',
 })
 export default class MlPerformance {
+  readonly successIcon = CircleCheck;
+
   metrics = [
-    { name: 'RMSE', value: '23.4M COP', trend: -2.3, status: 'good', icon: 'activity' },
-    { name: 'MAE', value: '18.7M COP', trend: -1.8, status: 'good', icon: 'activity' },
-    { name: 'R² Score', value: '0.947', trend: +1.2, status: 'excellent', icon: 'check-circle' },
-    { name: 'MAPE', value: '4.2%', trend: -0.5, status: 'good', icon: 'activity' }
+    { name: 'RMSE', value: '23.4M COP', trend: -2.3, status: 'good', icon: Activity },
+    { name: 'MAE', value: '18.7M COP', trend: -1.8, status: 'good', icon: Activity },
+    { name: 'R² Score', value: '0.947', trend: +1.2, status: 'excellent', icon: CircleCheck },
+    { name: 'MAPE', value: '4.2%', trend: -0.5, status: 'good', icon: Activity }
   ];
 
   predictedVsActualData: any;

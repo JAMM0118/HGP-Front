@@ -5,7 +5,7 @@
              [class]="getInsightClasses(insight.color)">
           <div class="flex items-start justify-between mb-4">
             <div [class]="'p-3 bg-slate-800/50 rounded-lg ' + getIconClass(insight.color)">
-              <i [class]="insight.icon + ' w-6 h-6'"></i>
+              <lucide-icon [img]="insight.icon" class="w-6 h-6"></lucide-icon>
             </div>
             <div class="flex items-center gap-2">
               <div [class]="'px-3 py-1 rounded-full text-xs font-medium ' + getBadgeClass(insight.color)">
@@ -19,7 +19,7 @@
             <div class="text-xs text-slate-400">Impacto: {{ insight.impact }}</div>
             <button class="text-sm text-blue-400 hover:text-blue-300 flex items-center gap-1">
               Ver Detalles
-              <i class="chevron-right w-4 h-4"></i>
+              <lucide-icon [img]="chevronRightIcon" class="w-4 h-4"></lucide-icon>
             </button>
           </div>
         </div>
@@ -28,7 +28,7 @@
       <!-- Recommendation Engine -->
       <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
         <div class="flex items-center gap-2 mb-6">
-          <i class="lightbulb w-5 h-5 text-yellow-400"></i>
+          <lucide-icon [img]="lightbulbIcon" class="w-5 h-5 text-yellow-400"></lucide-icon>
           <h3 class="text-lg font-semibold text-white">Recomendaciones de IA</h3>
         </div>
         <div class="space-y-4">
@@ -103,7 +103,7 @@
 
           <div class="mt-6 p-4 bg-green-900/20 border border-green-700/50 rounded-lg">
             <div class="flex items-center gap-2 text-sm text-green-300">
-              <i class="target w-4 h-4"></i>
+              <lucide-icon [img]="targetIcon" class="w-4 h-4 text-green-300"></lucide-icon>
               <span class="font-medium">Puntuación General de Riesgo: Bajo (79/100)</span>
             </div>
           </div>
@@ -116,7 +116,7 @@
         <div class="grid grid-cols-3 gap-4">
           <div *ngFor="let item of marketTrends" class="p-4 bg-slate-800 rounded-lg">
             <div class="flex items-center gap-2 mb-2">
-              <i [class]="item.icon + ' w-4 h-4 text-blue-400'"></i>
+              <lucide-icon [img]="item.icon" class="w-4 h-4 text-blue-400"></lucide-icon>
               <div class="text-sm font-semibold text-white">{{ item.trend }}</div>
             </div>
             <div class="text-2xl font-bold text-green-400 mb-1">{{ item.change }}</div>

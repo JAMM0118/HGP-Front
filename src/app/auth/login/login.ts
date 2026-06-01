@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-login',
+  standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './login.html',
   styles: [`
@@ -19,7 +20,7 @@ import { FormsModule } from '@angular/forms';
   `],
 })
 export default class Login {
-  email = '';
+ email = '';
   password = '';
   rememberMe = false;
   showPassword = false;
@@ -30,10 +31,7 @@ export default class Login {
   constructor(
     private authService: AuthService,
     private router: Router
-  ) {
-    // Crear usuarios de prueba si no existen
-    this.createTestUsers();
-  }
+  ) {}
 
   onSubmit(): void {
     if (!this.email || !this.password) {
@@ -48,49 +46,19 @@ export default class Login {
     this.authService.login(this.email, this.password).subscribe({
       next: (user) => {
         this.loading = false;
-        this.successMessage = '¡Inicio de sesión exitoso!';
+        this.successMessage = `¡Bienvenido ${user.name}!`;
         setTimeout(() => {
           this.router.navigate(['/dashboard']);
         }, 500);
       },
       error: (error) => {
         this.loading = false;
-        this.errorMessage = error.message || 'Error al iniciar sesión';
+        this.errorMessage = error.error?.message || error.message || 'Email o contraseña incorrectos';
       }
     });
   }
 
   goToRegister(): void {
     this.router.navigate(['/register']);
-  }
-
-  private createTestUsers(): void {
-    const usersJson = localStorage.getItem('users');
-    if (!usersJson) {
-      const testUsers = [
-        {
-          id: 'admin_001',
-          email: 'admin@proppredict.com',
-          password: 'admin123',
-          name: 'Administrador',
-          userType: 'admin'
-        },
-        {
-          id: 'analyst_001',
-          email: 'analyst@proppredict.com',
-          password: 'analyst123',
-          name: 'Analista de Datos',
-          userType: 'analyst'
-        },
-        {
-          id: 'guest_001',
-          email: 'guest@proppredict.com',
-          password: 'guest123',
-          name: 'Usuario Invitado',
-          userType: 'guest'
-        }
-      ];
-      localStorage.setItem('users', JSON.stringify(testUsers));
-    }
   }
 }

@@ -2,6 +2,18 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService, User } from '../../../services/auth.service';
+import {
+  LucideAngularModule,
+  LayoutDashboard,
+  BarChart3,
+  Map,
+  Brain,
+  Activity,
+  Lightbulb,
+  Table,
+  LogOut,
+  CircleAlert
+} from 'lucide-angular';
 import DataTable from '../../components/data-table/data-table';
 import AiInsights from '../../components/ai-insights/ai-insights';
 import MlPerformance from '../../components/ml-performance/ml-performance';
@@ -13,7 +25,7 @@ import PredictiveModelling from '../../components/predictive-modelling/predictiv
 interface NavigationItem {
   id: string;
   label: string;
-  icon: string;
+  icon: any;
   requiredRoles?: string[];
 }
 
@@ -22,6 +34,7 @@ interface NavigationItem {
   standalone: true,
   imports: [
     CommonModule,
+    LucideAngularModule,
     ExecutiveSummary,
     PredictiveModelling,
     ExploratoryAnalytics,
@@ -36,15 +49,17 @@ interface NavigationItem {
 export default class DashboardComponent {
   activeModule = 'executive';
   currentUser: User | null = null;
+  readonly logoutIcon = LogOut;
+  readonly alertIcon = CircleAlert;
 
   navigationItems: NavigationItem[] = [
-    { id: 'executive', label: 'Resumen Ejecutivo', icon: 'layout-dashboard' },
-    { id: 'analytics', label: 'Análisis de Datos', icon: 'bar-chart-3' },
-    { id: 'geospatial', label: 'Inteligencia Geoespacial', icon: 'map' },
-    { id: 'prediction', label: 'Modelado Predictivo', icon: 'brain', requiredRoles: ['admin', 'analyst'] },
-    { id: 'ml-performance', label: 'Rendimiento ML', icon: 'activity', requiredRoles: ['admin', 'analyst'] },
-    { id: 'insights', label: 'Insights de IA', icon: 'lightbulb' },
-    { id: 'data-table', label: 'Registros de Datos', icon: 'table' }
+    { id: 'executive', label: 'Resumen Ejecutivo', icon: LayoutDashboard },
+    { id: 'analytics', label: 'Análisis de Datos', icon: BarChart3 },
+    { id: 'geospatial', label: 'Inteligencia Geoespacial', icon: Map },
+    { id: 'prediction', label: 'Modelado Predictivo', icon: Brain, requiredRoles: ['admin', 'analyst'] },
+    { id: 'ml-performance', label: 'Rendimiento ML', icon: Activity, requiredRoles: ['admin', 'analyst'] },
+    { id: 'insights', label: 'Insights de IA', icon: Lightbulb },
+    { id: 'data-table', label: 'Registros de Datos', icon: Table }
   ];
 
   constructor(

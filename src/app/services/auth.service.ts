@@ -1,21 +1,40 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 export interface User {
   id: string;
   email: string;
   name: string;
-  userType: 'admin' | 'analyst' | 'guest';
+  userType: 'administrador' | 'analista_datos' | 'invitado';
+}
+
+export interface LoginResponse {
+  user: User;
+  token: string;
+  message?: string;
+}
+
+export interface RegisterResponse {
+  user: User;
+  token: string;
+  message?: string;
+}
+
+export interface LogoutResponse {
+  message: string;
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
+  private apiUrl = 'http://localhost:5000/api/auth';
   private currentUserSubject: BehaviorSubject<User | null>;
   public currentUser: Observable<User | null>;
 
-  constructor() {
+  constructor(private http: HttpClient) {
     const storedUser = localStorage.getItem('currentUser');
     this.currentUserSubject = new BehaviorSubject<User | null>(
       storedUser ? JSON.parse(storedUser) : null
@@ -27,75 +46,86 @@ export class AuthService {
     return this.currentUserSubject.value;
   }
 
+  public getToken(): string | null {
+    return localStorage.getItem('authToken');
+  }
+
+  /**
+   * Iniciar sesión
+   *
+   * Backend URL: POST /api/auth/login
+   * Body: { email: string, password: string }
+   * Response: { user: User, token: string, message?: string }
+   */
   login(email: string, password: string): Observable<User> {
-    return new Observable(observer => {
-      // Simulación de llamada a API
-      setTimeout(() => {
-        // Buscar usuario en localStorage (usuarios registrados)
-        const users = this.getStoredUsers();
-        const user = users.find(u => u.email === email && u.password === password);
+    return this.http.post<LoginResponse>(`${this.apiUrl}/login`, { email, password })
+      .pipe(
+        map(response => {
+          // Guardar usuario y token en localStorage
+          localStorage.setItem('currentUser', JSON.stringify(response.user));
+          localStorage.setItem('authToken', response.token);
 
-        if (user) {
-          const authenticatedUser: User = {
-            id: user.id,
-            email: user.email,
-            name: user.name,
-            userType: user.userType
-          };
+          // Actualizar BehaviorSubject
+          this.currentUserSubject.next(response.user);
 
-          localStorage.setItem('currentUser', JSON.stringify(authenticatedUser));
-          this.currentUserSubject.next(authenticatedUser);
-          observer.next(authenticatedUser);
-          observer.complete();
-        } else {
-          observer.error({ message: 'Email o contraseña incorrectos' });
-        }
-      }, 500);
-    });
+          return response.user;
+        })
+      );
   }
 
-  register(name: string, email: string, password: string, userType: 'admin' | 'analyst' | 'guest'): Observable<User> {
-    return new Observable(observer => {
-      setTimeout(() => {
-        const users = this.getStoredUsers();
+  /**
+   * Registrar nuevo usuario
+   *
+   * Backend URL: POST /api/auth/register
+   * Body: { name: string, email: string, password: string, userType: string }
+   * Response: { user: User, token: string, message?: string }
+   */
+  register(name: string, email: string, password: string, userType: 'administrador' | 'analista_datos' | 'invitado'): Observable<User> {
+    return this.http.post<RegisterResponse>(`${this.apiUrl}/register`, {
+      name,
+      email,
+      password,
+      userType
+    }).pipe(
+      map(response => {
+        // Guardar usuario y token en localStorage
+        localStorage.setItem('currentUser', JSON.stringify(response.user));
+        localStorage.setItem('authToken', response.token);
 
-        // Verificar si el email ya existe
-        if (users.find(u => u.email === email)) {
-          observer.error({ message: 'El email ya está registrado' });
-          return;
-        }
+        // Actualizar BehaviorSubject
+        this.currentUserSubject.next(response.user);
 
-        // Crear nuevo usuario
-        const newUser = {
-          id: this.generateId(),
-          email,
-          password, // En producción, esto debería estar hasheado
-          name,
-          userType
-        };
-
-        users.push(newUser);
-        localStorage.setItem('users', JSON.stringify(users));
-
-        const authenticatedUser: User = {
-          id: newUser.id,
-          email: newUser.email,
-          name: newUser.name,
-          userType: newUser.userType
-        };
-
-        localStorage.setItem('currentUser', JSON.stringify(authenticatedUser));
-        this.currentUserSubject.next(authenticatedUser);
-
-        observer.next(authenticatedUser);
-        observer.complete();
-      }, 500);
-    });
+        return response.user;
+      })
+    );
   }
 
-  logout(): void {
-    localStorage.removeItem('currentUser');
-    this.currentUserSubject.next(null);
+  /**
+   * Cerrar sesión
+   *
+   * Backend URL: POST /api/auth/logout
+   * Headers: Authorization: Bearer <token>
+   * Response: { message: string }
+   */
+  logout(): Observable<LogoutResponse> {
+    const token = this.getToken();
+
+    return this.http.post<LogoutResponse>(`${this.apiUrl}/logout`, {}, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    }).pipe(
+      map(response => {
+        // Limpiar localStorage
+        localStorage.removeItem('currentUser');
+        localStorage.removeItem('authToken');
+
+        // Actualizar BehaviorSubject
+        this.currentUserSubject.next(null);
+
+        return response;
+      })
+    );
   }
 
   isAuthenticated(): boolean {
@@ -106,14 +136,5 @@ export class AuthService {
     const user = this.currentUserValue;
     if (!user) return false;
     return roles.includes(user.userType);
-  }
-
-  private getStoredUsers(): any[] {
-    const usersJson = localStorage.getItem('users');
-    return usersJson ? JSON.parse(usersJson) : [];
-  }
-
-  private generateId(): string {
-    return 'user_' + Math.random().toString(36).substr(2, 9);
   }
 }

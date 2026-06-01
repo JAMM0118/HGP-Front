@@ -28,7 +28,7 @@
                 ? 'bg-blue-600 text-white'
                 : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200')"
           >
-            <i [class]="item.icon + ' w-5 h-5'"></i>
+            <lucide-icon [img]="item.icon" class="w-5 h-5 shrink-0"></lucide-icon>
             <span class="text-sm">{{ item.label }}</span>
           </button>
         </nav>
@@ -38,7 +38,7 @@
           <button
             (click)="logout()"
             class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-slate-400 hover:bg-red-900/20 hover:text-red-400 transition-colors">
-            <i class="log-out w-5 h-5"></i>
+            <lucide-icon [img]="logoutIcon" class="w-5 h-5 shrink-0"></lucide-icon>
             <span class="text-sm">Cerrar Sesión</span>
           </button>
           <div class="text-xs text-slate-500 mt-3">
@@ -73,10 +73,10 @@
         <!-- Module Content -->
         <div class="flex-1 overflow-auto p-6 bg-slate-950">
           <!-- Mensaje para invitados -->
-          <div *ngIf="currentUser?.userType === 'guest' && isRestrictedModule()"
+          <div *ngIf="currentUser?.userType === 'invitado' && isRestrictedModule()"
                class="mb-4 p-4 bg-amber-900/20 border border-amber-700/50 rounded-lg">
             <div class="flex items-center gap-2">
-              <i class="alert-circle w-5 h-5 text-amber-400"></i>
+              <lucide-icon [img]="alertIcon" class="w-5 h-5 shrink-0 text-amber-400"></lucide-icon>
               <span class="text-sm text-amber-300">
                 Como usuario invitado, tienes acceso de solo lectura. Actualiza tu cuenta para acceder a todas las funciones.
               </span>

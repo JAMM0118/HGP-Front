@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import {Component, NgModule } from '@angular/core';
+import { Component } from '@angular/core';
 import { NavigationItem } from '../../interfaces/models.interface';
 import ExecutiveSummary from "../../components/executive-summary/executive-summary";
 import PredictiveModelling from '../../components/predictive-modelling/predictive-modelling';
@@ -8,13 +8,24 @@ import GeospatialIntelligence from "../../components/geospatial-intelligence/geo
 import MlPerformance from "../../components/ml-performance/ml-performance";
 import AiInsights from "../../components/ai-insights/ai-insights";
 import DataTable from "../../components/data-table/data-table";
-import { LucideAngularModule } from 'lucide-angular';
+import {
+  LucideAngularModule,
+  LayoutDashboard,
+  BarChart3,
+  Map,
+  Brain,
+  Activity,
+  Lightbulb,
+  Table
+} from 'lucide-angular';
 
 
 @Component({
   selector: 'app-home',
+  standalone: true,
   imports: [
     CommonModule,
+    LucideAngularModule,
     ExecutiveSummary,
     PredictiveModelling,
     ExploratoryAnalytics,
@@ -26,16 +37,16 @@ import { LucideAngularModule } from 'lucide-angular';
   templateUrl: './home-component.html',
 })
 export default class HomeComponent {
-    activeModule = 'executive';
+  activeModule = 'executive';
 
-  navigationItems: NavigationItem[] = [
-    { id: 'executive', label: 'Resumen Ejecutivo', icon: 'layout-dashboard' },
-    { id: 'analytics', label: 'Análisis de Datos', icon: 'bar-chart-3' },
-    { id: 'geospatial', label: 'Inteligencia Geoespacial', icon: 'map' },
-    { id: 'prediction', label: 'Modelado Predictivo', icon: 'brain' },
-    { id: 'ml-performance', label: 'Rendimiento ML', icon: 'activity' },
-    { id: 'insights', label: 'Insights de IA', icon: 'lightbulb' },
-    { id: 'data-table', label: 'Registros de Datos', icon: 'table' }
+  readonly navigationItems: NavigationItem[] = [
+    { id: 'executive', label: 'Resumen Ejecutivo', icon: LayoutDashboard },
+    { id: 'analytics', label: 'Análisis de Datos', icon: BarChart3 },
+    { id: 'geospatial', label: 'Inteligencia Geoespacial', icon: Map },
+    { id: 'prediction', label: 'Modelado Predictivo', icon: Brain },
+    { id: 'ml-performance', label: 'Rendimiento ML', icon: Activity },
+    { id: 'insights', label: 'Insights de IA', icon: Lightbulb },
+    { id: 'data-table', label: 'Registros de Datos', icon: Table }
   ];
 
   getCurrentModuleLabel(): string {

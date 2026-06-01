@@ -1,85 +1,159 @@
 <div class="space-y-6">
-      <!-- Price Distribution -->
-      <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
-        <h3 class="text-lg font-semibold text-white mb-4">Distribución de Precios</h3>
-        <div class="h-[300px]">
-          <canvas baseChart
-            [data]="priceDistributionData"
-            [options]="barChartOptions"
-            [type]="'bar'">
-          </canvas>
+  <!-- Price Distribution -->
+  <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+    <h3 class="text-lg font-semibold text-white mb-4">Distribución de Precios</h3>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoadingPriceDistribution" class="h-[300px] flex items-center justify-center">
+      <div class="animate-spin w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="priceDistributionError" class="h-[300px] flex items-center justify-center">
+      <div class="bg-red-900/30 border border-red-700 rounded-lg p-3 flex items-start gap-2">
+        <lucide-icon [img]="alertIcon" class="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5"></lucide-icon>
+        <p class="text-sm text-red-300">{{ priceDistributionError }}</p>
+      </div>
+    </div>
+
+    <!-- Data -->
+    <div *ngIf="!isLoadingPriceDistribution && !priceDistributionError && priceDistributionData" class="h-[300px]">
+      <canvas baseChart [data]="priceDistributionData" [options]="barChartOptions" [type]="'bar'">
+      </canvas>
+    </div>
+  </div>
+
+  <!-- Time Series Trends -->
+  <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+    <h3 class="text-lg font-semibold text-white mb-4">Tendencias del Mercado (2022-2025)</h3>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoadingMarketTrends" class="h-[350px] flex items-center justify-center">
+      <div class="animate-spin w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="marketTrendsError" class="h-[350px] flex items-center justify-center">
+      <div class="bg-red-900/30 border border-red-700 rounded-lg p-3 flex items-start gap-2">
+        <lucide-icon [img]="alertIcon" class="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5"></lucide-icon>
+        <p class="text-sm text-red-300">{{ marketTrendsError }}</p>
+      </div>
+    </div>
+
+    <!-- Data -->
+    <div *ngIf="!isLoadingMarketTrends && !marketTrendsError && timeSeriesData" class="h-[350px]">
+      <canvas baseChart [data]="timeSeriesData" [options]="lineChartOptions" [type]="'line'">
+      </canvas>
+    </div>
+  </div>
+
+  <!-- Scatter Plots -->
+  <div class="grid grid-cols-2 gap-6">
+    <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+      <h3 class="text-lg font-semibold text-white mb-4">Precio Promedio por Área Construida</h3>
+
+      <!-- Loading State -->
+      <div *ngIf="isLoadingPriceByArea" class="h-[300px] flex items-center justify-center">
+        <div class="animate-spin w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+      </div>
+
+      <!-- Error State -->
+      <div *ngIf="priceByAreaError" class="h-[300px] flex items-center justify-center">
+        <div class="bg-red-900/30 border border-red-700 rounded-lg p-3 flex items-start gap-2">
+          <lucide-icon [img]="alertIcon" class="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5"></lucide-icon>
+          <p class="text-sm text-red-300">{{ priceByAreaError }}</p>
         </div>
       </div>
 
-      <!-- Time Series Trends -->
-      <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
-        <h3 class="text-lg font-semibold text-white mb-4">Tendencias del Mercado (2022-2025)</h3>
-        <div class="h-[350px]">
-          <canvas baseChart
-            [data]="timeSeriesData"
-            [options]="lineChartOptions"
-            [type]="'line'">
-          </canvas>
+      <!-- Data -->
+      <div *ngIf="!isLoadingPriceByArea && !priceByAreaError && priceVsAreaData" class="h-[300px]">
+        <canvas baseChart [data]="priceVsAreaData" [options]="scatterChartOptions" [type]="'scatter'">
+        </canvas>
+      </div>
+    </div>
+
+    <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+      <h3 class="text-lg font-semibold text-white mb-4">Precio Promedio por Habitaciones</h3>
+
+      <!-- Loading State -->
+      <div *ngIf="isLoadingPriceByBedrooms" class="h-[300px] flex items-center justify-center">
+        <div class="animate-spin w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+      </div>
+
+      <!-- Error State -->
+      <div *ngIf="priceByBedroomsError" class="h-[300px] flex items-center justify-center">
+        <div class="bg-red-900/30 border border-red-700 rounded-lg p-3 flex items-start gap-2">
+          <lucide-icon [img]="alertIcon" class="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5"></lucide-icon>
+          <p class="text-sm text-red-300">{{ priceByBedroomsError }}</p>
         </div>
       </div>
 
-      <!-- Scatter Plots -->
-      <div class="grid grid-cols-2 gap-6">
-        <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
-          <h3 class="text-lg font-semibold text-white mb-4">Precio vs Área</h3>
-          <div class="h-[300px]">
-            <canvas baseChart
-              [data]="priceVsAreaData"
-              [options]="scatterChartOptions"
-              [type]="'scatter'">
-            </canvas>
-          </div>
-        </div>
+      <!-- Data -->
+      <div *ngIf="!isLoadingPriceByBedrooms && !priceByBedroomsError && priceVsBedroomsData" class="h-[300px]">
+        <canvas baseChart [data]="priceVsBedroomsData" [options]="barChartOptions" [type]="'bar'">
+        </canvas>
+      </div>
+    </div>
+  </div>
 
-        <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
-          <h3 class="text-lg font-semibold text-white mb-4">Precio vs Habitaciones</h3>
-          <div class="h-[300px]">
-            <canvas baseChart
-              [data]="priceVsBedroomsData"
-              [options]="barChartOptions"
-              [type]="'bar'">
-            </canvas>
-          </div>
+  <!-- Property Types and Correlation Matrix -->
+  <div class="grid grid-cols-2 gap-6">
+    <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+      <h3 class="text-lg font-semibold text-white mb-4">Comparación por Área Construida</h3>
+
+      <!-- Loading State -->
+      <div *ngIf="isLoadingAreaComparison" class="h-[300px] flex items-center justify-center">
+        <div class="animate-spin w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+      </div>
+
+      <!-- Error State -->
+      <div *ngIf="areaComparisonError" class="h-[300px] flex items-center justify-center">
+        <div class="bg-red-900/30 border border-red-700 rounded-lg p-3 flex items-start gap-2">
+          <lucide-icon [img]="alertIcon" class="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5"></lucide-icon>
+          <p class="text-sm text-red-300">{{ areaComparisonError }}</p>
         </div>
       </div>
 
-      <!-- Property Types and Correlation Matrix -->
-      <div class="grid grid-cols-2 gap-6">
-        <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
-          <h3 class="text-lg font-semibold text-white mb-4">Distribución por Tipo de Propiedad</h3>
-          <div class="h-[300px]">
-            <canvas baseChart
-              [data]="propertyTypesData"
-              [options]="horizontalBarOptions"
-              [type]="'bar'">
-            </canvas>
-          </div>
-        </div>
+      <!-- Data -->
+      <div *ngIf="!isLoadingAreaComparison && !areaComparisonError && propertyTypesData" class="h-[300px]">
+        <canvas baseChart [data]="propertyTypesData" [options]="groupedBarOptions" [type]="'bar'">
+        </canvas>
+      </div>
+    </div>
 
-        <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
-          <h3 class="text-lg font-semibold text-white mb-4">Matriz de Correlación</h3>
-          <div class="space-y-2">
-            <div class="grid grid-cols-5 gap-2 text-xs font-medium text-slate-400 text-center">
-              <div></div>
-              <div>Precio</div>
-              <div>Habs</div>
-              <div>Baños</div>
-              <div>Ubicación</div>
-            </div>
-            <div *ngFor="let row of correlationData" class="grid grid-cols-5 gap-2">
-              <div class="text-xs font-medium text-slate-400 flex items-center">{{ row.feature }}</div>
-              <div *ngFor="let value of [row.price, row.bedrooms, row.bathrooms, row.location]"
-                   [class]="getCorrelationClass(value)"
-                   [style.opacity]="Math.abs(value)">
-                {{ value.toFixed(2) }}
-              </div>
-            </div>
+    <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+      <h3 class="text-lg font-semibold text-white mb-4">Matriz de Correlación</h3>
+
+      <!-- Loading State -->
+      <div *ngIf="isLoadingCorrelation" class="h-[280px] flex items-center justify-center">
+        <div class="animate-spin w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+      </div>
+
+      <!-- Error State -->
+      <div *ngIf="correlationError" class="h-[280px] flex items-center justify-center">
+        <div class="bg-red-900/30 border border-red-700 rounded-lg p-3 flex items-start gap-2">
+          <lucide-icon [img]="alertIcon" class="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5"></lucide-icon>
+          <p class="text-sm text-red-300">{{ correlationError }}</p>
+        </div>
+      </div>
+
+      <!-- Data -->
+      <div *ngIf="!isLoadingCorrelation && !correlationError && correlationData" class="space-y-2">
+        <div class="grid grid-cols-5 gap-2 text-xs font-medium text-slate-400 text-center">
+          <div></div>
+          <div>Precio</div>
+          <div>Habs</div>
+          <div>Baños</div>
+          <div>Área</div>
+        </div>
+        <div *ngFor="let row of correlationData" class="grid grid-cols-5 gap-2">
+          <div class="text-xs font-medium text-slate-400 flex items-center">{{ row.feature }}</div>
+          <div *ngFor="let value of [row.price, row.bedrooms, row.bathrooms, row.area]"
+            [class]="getCorrelationClass(value)" [style.opacity]="Math.abs(value)">
+            {{ value.toFixed(2) }}
           </div>
         </div>
       </div>
     </div>
+  </div>
+</div>

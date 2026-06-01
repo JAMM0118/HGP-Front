@@ -1,28 +1,38 @@
-import {Component } from '@angular/core';
+import { Component } from '@angular/core';
 import { PredictionResult } from '../../interfaces/models.interface';
 import { CommonModule } from '@angular/common';
 import { ChartConfiguration } from 'chart.js';
-import {FormsModule} from "@angular/forms";
+import { FormsModule } from '@angular/forms';
 import { NgChartsModule } from 'ng2-charts';
+import { PredictionRequest, PredictionService } from '../../../services/prediction.service';
+import { LucideAngularModule, Calculator, CircleAlert, TrendingUp } from 'lucide-angular';
 
 @Component({
   selector: 'app-predictive-modelling',
-  imports: [CommonModule, FormsModule,NgChartsModule],
+  standalone: true,
+  imports: [CommonModule, FormsModule, NgChartsModule, LucideAngularModule],
   templateUrl: './predictive-modelling.html',
 })
 export default class PredictiveModelling {
+  readonly calculatorIcon = Calculator;
+  readonly alertIcon = CircleAlert;
+  readonly trendIcon = TrendingUp;
+
   Math = Math;
 
   formData = {
     area: 95,
     bedrooms: 3,
     bathrooms: 2,
-    propertyType: 'apartment',
-    city: 'bogota',
-    neighborhood: 'chapinero'
+    propertyType: 'apartamento',
+    city: 'Bogotá'
   };
 
   prediction: PredictionResult | null = null;
+  isLoading = false;
+  errorMessage = '';
+
+  constructor(private predictionService: PredictionService) {}
 
   featureImportanceData: any;
   horizontalBarOptions: ChartConfiguration['options'] = {
@@ -68,23 +78,50 @@ export default class PredictiveModelling {
   }
 
   handlePredict() {
-    const basePrice = 280;
-    const areaFactor = this.formData.area * 4.2;
-    const bedroomFactor = this.formData.bedrooms * 35;
-    const bathroomFactor = this.formData.bathrooms * 28;
-    const cityMultiplier = this.formData.city === 'bogota' ? 1.15 : this.formData.city === 'medellin' ? 1.08 : 1.0;
-    const typeMultiplier =
-      this.formData.propertyType === 'penthouse' ? 1.35 : this.formData.propertyType === 'house' ? 1.12 : 1.0;
+    // Validar campos
+    if (!this.formData.area || !this.formData.bedrooms || !this.formData.bathrooms || !this.formData.city) {
+      this.errorMessage = 'Por favor completa todos los campos';
+      return;
+    }
 
-    const predictedPrice = (basePrice + areaFactor + bedroomFactor + bathroomFactor) * cityMultiplier * typeMultiplier;
-    const lowerBound = predictedPrice * 0.92;
-    const upperBound = predictedPrice * 1.08;
+    this.isLoading = true;
+    this.errorMessage = '';
+    this.prediction = null;
 
-    this.prediction = {
-      price: predictedPrice.toFixed(2),
-      lowerBound: lowerBound.toFixed(2),
-      upperBound: upperBound.toFixed(2),
-      confidence: 94.7
+    // Preparar request para el backend
+    const request: PredictionRequest = {
+      area_construida: this.formData.area,
+      habitaciones: this.formData.bedrooms,
+      banos: this.formData.bathrooms,
+      tipo_propiedad: this.formData.propertyType.toLowerCase(),
+      ciudad: this.formData.city.toLowerCase()
     };
+
+    // Llamar al servicio de predicción
+    this.predictionService.getPrediction(request).subscribe({
+      next: (response) => {
+        // Convertir precio de COP a millones
+        const priceInMillions = response.precio_estimado / 1000000;
+
+        // Calcular intervalo de confianza (±8% del precio estimado)
+        const lowerBound = priceInMillions * 0.92;
+        const upperBound = priceInMillions * 1.08;
+
+        this.prediction = {
+          price: priceInMillions.toFixed(2),
+          lowerBound: lowerBound.toFixed(2),
+          upperBound: upperBound.toFixed(2),
+          confidence: 94.7,
+          fecha: response.fecha
+        };
+
+        this.isLoading = false;
+      },
+      error: (error) => {
+        this.isLoading = false;
+        this.errorMessage = error.error?.error || 'Error al obtener la predicción. Por favor intenta nuevamente.';
+        console.error('Error en predicción:', error);
+      }
+    });
   }
 }

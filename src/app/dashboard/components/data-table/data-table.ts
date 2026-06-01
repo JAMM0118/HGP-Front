@@ -3,17 +3,36 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { PaginationParams, Property, PropertyFilters } from '../../interfaces/models.interface';
 import { PropertyService } from '../../../services/property.service';
+import { LucideAngularModule, CircleCheck, X, CircleAlert, AlertTriangle, Search, Filter, ChevronUp, ChevronDown, Upload, Download, ChevronLeft, ChevronRight } from 'lucide-angular';
 
 @Component({
   selector: 'app-data-table',
-  imports: [CommonModule, FormsModule],
+  standalone: true,
+  imports: [CommonModule, FormsModule, LucideAngularModule],
   templateUrl: './data-table.html',
 })
-export default class DataTable implements OnInit  {
+export default class DataTable implements OnInit {
+  readonly successIcon = CircleCheck;
+  readonly closeIcon = X;
+  readonly alertIcon = CircleAlert;
+  readonly warningIcon = AlertTriangle;
+  readonly searchIcon = Search;
+  readonly filterIcon = Filter;
+  readonly chevronUpIcon = ChevronUp;
+  readonly chevronDownIcon = ChevronDown;
+  readonly uploadIcon = Upload;
+  readonly downloadIcon = Download;
+  readonly previousIcon = ChevronLeft;
+  readonly nextIcon = ChevronRight;
+
   searchTerm = '';
-  filterCity = 'all';
+  filterCity = '';
   filterType = 'all';
-  sortField: keyof Property = 'price';
+  minPrice: number | null = null;
+  maxPrice: number | null = null;
+  filterBedrooms = 'all';
+  filterBathrooms = 'all';
+  sortField: keyof Property = 'precio';
   sortDirection: 'asc' | 'desc' = 'desc';
   currentPage = 1;
   itemsPerPage = 15;
@@ -23,6 +42,7 @@ export default class DataTable implements OnInit  {
   successMessage = '';
   errorMessage = '';
   importErrors: string[] = [];
+  showFilters = false;
 
   totalRecords = 0;
 
@@ -46,7 +66,7 @@ export default class DataTable implements OnInit  {
   filteredData: Property[] = [];
   paginatedData: Property[] = [];
 
-  constructor(private propertyService: PropertyService) {}
+  constructor(private propertyService: PropertyService) { }
 
   ngOnInit() {
     this.loadData();
@@ -58,20 +78,35 @@ export default class DataTable implements OnInit  {
 
     const filters: PropertyFilters = {};
     if (this.searchTerm) filters.search = this.searchTerm;
-    if (this.filterCity !== 'all') filters.city = this.filterCity;
+    if (this.filterCity) filters.city = this.filterCity;
     if (this.filterType !== 'all') filters.type = this.filterType;
+    if (this.minPrice !== null && this.minPrice > 0) filters.minPrice = this.minPrice * 1000000; // Convertir millones a pesos
+    if (this.maxPrice !== null && this.maxPrice > 0) filters.maxPrice = this.maxPrice * 1000000;
+
+    if (this.filterBedrooms !== 'all') {
+      const bedrooms = parseInt(this.filterBedrooms);
+      if (!isNaN(bedrooms)) {
+        filters.bedrooms = bedrooms;
+      }
+    }
+    if (this.filterBathrooms !== 'all') {
+      const bathrooms = parseInt(this.filterBathrooms);
+      if (!isNaN(bathrooms)) {
+        filters.bathrooms = bathrooms;
+      }
+    }
 
     const pagination: PaginationParams = {
       page: this.currentPage,
-      limit: this.itemsPerPage,
-      sortBy: this.sortField.toString(),
+      pageSize: this.itemsPerPage,
+      sortBy: this.sortField as string,
       sortOrder: this.sortDirection
     };
 
     this.propertyService.getProperties(filters, pagination).subscribe({
       next: (response) => {
-        this.paginatedData = response.data;
-        this.filteredData = response.data;
+        this.paginatedData = response.items;
+        this.filteredData = response.items;
         this.totalRecords = response.total;
         this.isLoading = false;
         this.loadingMessage = '';
@@ -80,6 +115,7 @@ export default class DataTable implements OnInit  {
         this.errorMessage = 'Error al cargar las propiedades';
         this.isLoading = false;
         this.loadingMessage = '';
+        console.error('Error loading properties:', error);
       }
     });
   }
@@ -87,6 +123,17 @@ export default class DataTable implements OnInit  {
   filterData() {
     this.currentPage = 1;
     this.loadData();
+  }
+
+  clearFilters() {
+    this.searchTerm = '';
+    this.filterCity = '';
+    this.filterType = 'all';
+    this.minPrice = null;
+    this.maxPrice = null;
+    this.filterBedrooms = 'all';
+    this.filterBathrooms = 'all';
+    this.filterData();
   }
 
   handleSort(field: keyof Property) {
@@ -228,8 +275,18 @@ export default class DataTable implements OnInit  {
   handleExport() {
     const filters: PropertyFilters = {};
     if (this.searchTerm) filters.search = this.searchTerm;
-    if (this.filterCity !== 'all') filters.city = this.filterCity;
+    if (this.filterCity) filters.city = this.filterCity;
     if (this.filterType !== 'all') filters.type = this.filterType;
+    if (this.minPrice !== null && this.minPrice > 0) filters.minPrice = this.minPrice * 1000000; // Convertir a pesos
+    if (this.maxPrice !== null && this.maxPrice > 0) filters.maxPrice = this.maxPrice * 1000000;
+    if (this.filterBedrooms !== 'all') {
+      const bedrooms = parseInt(this.filterBedrooms);
+      if (!isNaN(bedrooms)) filters.bedrooms = bedrooms;
+    }
+    if (this.filterBathrooms !== 'all') {
+      const bathrooms = parseInt(this.filterBathrooms);
+      if (!isNaN(bathrooms)) filters.bathrooms = bathrooms;
+    }
 
     this.isLoading = true;
     this.loadingMessage = 'Generando archivo CSV...';
@@ -255,4 +312,4 @@ export default class DataTable implements OnInit  {
       }
     });
   }
- }
+}

@@ -3,49 +3,46 @@ export interface KPI {
   value: string;
   change: string;
   trend: 'up' | 'down';
-  icon: string;
+  icon: any;
 }
 
 
 export interface NavigationItem {
   id: string;
   label: string;
-  icon: string;
+  icon: any;
 }
-
 
 export interface Property {
   id: string;
-  titulo?: string;
-  fechaActualizacion?: string;
-  idPropiedad?: string;
-  linkPropiedad?: string;
-  tipoPropiedad?: string;
-  tipoOperacion?: string;
-  linkGoogleMaps?: string;
-  direccion: string;
-  ubicacionPrincipal?: string;
-  estado?: string;
-  ciudad: string;
-  localidad?: string;
-  comuna?: string;
-  zona?: string;
-  region?: string;
-  barrios?: string;
-  pisoN?: string;
-  banos?: number;
-  habitaciones?: number;
-  garages?: number;
-  areaConstruida?: number;
-  antiguedad?: string;
-  estrato?: number;
-  precio?: number;
-  estadoConstruccion?: string;
-  antiguedadCategoria?: string;
-  localidadDefi?: string;
-  fechaCaptura?: string;
+  area_construida: number;
+  banos: number;
+  estrato: number;
+  garages: number;
+  habitaciones: number;
+  precio: number;
+  propiedad: {
+    tipo_propiedad:string,
+    titulo: string,
+    antiguedad: string;
+    tipo_operacion: string,
+    estado_construccion:string,
+    antiguedad_categoria: string
+  };
+  tiempo: {
+    anio: number;
+    fecha: {date: string};
+    mes: number;
+  };
+  ubicacion: {
+    direccion: string;
+    barrio: string;
+    ciudad: string;
+    region : string;
+    localidad: string;
+    zona: string;
+  }
   predictedPrice?: number; // Para predicciones del modelo ML
-  lastUpdated: string;
   [key: string]: any; // Para campos dinámicos del backend
 }
 
@@ -61,7 +58,35 @@ export interface PropertyFilters {
 
 export interface PaginationParams {
   page: number;
+  pageSize: number;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
+}
+
+export interface PropertyResponse {
+  items: Property[];
+  total: number;
+  page: number;
   limit: number;
+  totalPages: number;
+}
+
+export interface PropertyFilters {
+  search?: string;
+  city?: string;
+  type?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  minArea?: number;
+  maxArea?: number;
+  bedrooms?: number;
+  bathrooms?: number;
+}
+
+
+export interface PaginationParams {
+  page: number;
+  pageSize: number;
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';
 }
@@ -81,7 +106,7 @@ export interface Insight {
   type: string;
   impact: string;
   confidence: number;
-  icon: string;
+  icon: any;
   color: string;
 }
 
@@ -90,6 +115,7 @@ export interface PredictionResult {
   lowerBound: string;
   upperBound: string;
   confidence: number;
+  fecha: string;
 }
 
 export interface RegionalData {

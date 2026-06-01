@@ -2,13 +2,18 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RegionalData } from '../../interfaces/models.interface';
+import { LucideAngularModule, Filter, MapPin } from 'lucide-angular';
 
 @Component({
   selector: 'app-geospatial-intelligence',
-  imports: [CommonModule, FormsModule],
+  standalone: true,
+  imports: [CommonModule, FormsModule, LucideAngularModule],
   templateUrl: './geospatial-intelligence.html',
 })
 export default class GeospatialIntelligence {
+  readonly filterIcon = Filter;
+  readonly mapPinIcon = MapPin;
+
   selectedCity = 'all';
   selectedNeighborhood = 'all';
 

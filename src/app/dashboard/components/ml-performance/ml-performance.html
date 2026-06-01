@@ -4,7 +4,7 @@
         <div *ngFor="let metric of metrics" class="bg-slate-900 border border-slate-800 rounded-xl p-6">
           <div class="flex items-start justify-between mb-3">
             <div class="p-2 bg-slate-800 rounded-lg">
-              <i [class]="metric.icon + ' w-5 h-5 ' + (metric.status === 'excellent' ? 'text-green-400' : 'text-blue-400')"></i>
+              <lucide-icon [img]="metric.icon" class="w-5 h-5" [class.text-green-400]="metric.status === 'excellent'" [class.text-blue-400]="metric.status !== 'excellent'"></lucide-icon>
             </div>
             <div [class]="'text-sm ' + (metric.trend < 0 ? 'text-green-400' : 'text-blue-400')">
               {{ metric.trend > 0 ? '+' : '' }}{{ metric.trend }}%
@@ -75,7 +75,7 @@
             </canvas>
           </div>
           <div class="mt-4 flex items-center gap-2 text-sm">
-            <i class="check-circle w-4 h-4 text-green-400"></i>
+            <lucide-icon [img]="successIcon" class="w-4 h-4 text-green-400"></lucide-icon>
             <span class="text-slate-300">La deriva del modelo está dentro del umbral aceptable</span>
           </div>
         </div>
@@ -84,7 +84,7 @@
       <!-- Model Status -->
       <div class="grid grid-cols-3 gap-6">
         <div class="bg-green-900/20 border border-green-700/50 rounded-xl p-4 flex items-start gap-3">
-          <i class="check-circle w-5 h-5 text-green-400 flex-shrink-0 mt-0.5"></i>
+            <lucide-icon [img]="successIcon" class="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5"></lucide-icon>
           <div>
             <div class="text-sm font-medium text-green-200 mb-1">Salud del Modelo: Excelente</div>
             <div class="text-xs text-green-300/80">
